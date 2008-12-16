@@ -1,7 +1,7 @@
 #ifndef ROBOTSERVER_H
 #define ROBOTSERVER_H 1
 
-#define RELOAD_RATIO = 10;
+#define RELOAD_RATIO 10
 
 struct cannon {
 	int timeToReload;
