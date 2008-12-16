@@ -232,5 +232,18 @@ drive (180,0);   /* stop drive */
          interface too}: networking, game logic and graphics.  This is
        basically a set of ``struct''s containing info about robots and
        missiles.
+       
+\section{Network}
+
+      \begin{enumerate}
+        \item Send current location to the robots - only if is the start cycle or they're not busy
+        \item Move and explode missiles - not the start cycle
+        \item Update display - TODO ( Eberli e Dominguez )
+        \item Wait 10 ms (minus the time that was used to update the display) -  
+        \item Receive commands from the robots - If no command received robot is_busy = true, 
+        \item Send command replies to the robots - send FLAG ( 1 if ok 0 if not  ) + MESSAGE if necessary
+        \item Move robots
+        \end{enumerate}
+
 
 \end{document}
