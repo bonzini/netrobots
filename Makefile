@@ -9,8 +9,16 @@ all: all-logic all-graphics all-networking all-robots
 all-logic:
 
 ## graphics
+CFLAGS = -g `pkg-config cairo --cflags` `pkg-config sdl --cflags` -O2
+LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs` -framework OpenGL
 
-all-graphics:
+all-graphics: main: anim.o field.o drawing.o main.o
+
+anim.o: anim.c drawing.h
+field.o: field.c drawing.h field.h anim.h
+drawing.o: drawing.c drawing.h
+main.o: main.c drawing.h
+
 
 ## networking
 
