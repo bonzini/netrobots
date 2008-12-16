@@ -77,3 +77,14 @@ ndprintf (FILE *fd, char *fmt, ...)
 	}
 }
 
+void
+ndprintf_die (FILE *fd, char *fmt, ...)
+{
+	va_list vp;
+	if (debug) {
+		va_start(vp, fmt);
+		vfprintf(fd, fmt, vp);
+		va_end(vp);
+	}
+	exit(EXIT_FAILURE);
+}

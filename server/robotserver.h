@@ -3,7 +3,7 @@
 
 struct missile {
   int x, y;
-}
+};
 
 struct robot {
   int fd;
