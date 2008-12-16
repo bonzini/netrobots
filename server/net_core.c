@@ -5,7 +5,13 @@
 #include <errno.h>
 
 #include "net_utils.h"
+#include "net_defines.h"
 #include "robotserver.h"
+
+int
+create_client (int fd)
+{
+}
 
 void
 server_init (char *hostname, char *port)
@@ -43,5 +49,7 @@ server_init (char *hostname, char *port)
 
 	while (1) {
 		fd = accept(sockd, (struct sockaddr *) &addr, &addrlen);
+		if (!create_client(dup(fd)))
+			sockwrite(fd, ERROR, "Couldn't duplicate the FD\n");
 	}
 }

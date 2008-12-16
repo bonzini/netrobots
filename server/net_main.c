@@ -4,6 +4,7 @@
 #include <errno.h>
 
 #include "net_utils.h"
+#include "net_defines.h"
 #include "robotserver.h"
 
 #define STD_CLIENTS 5

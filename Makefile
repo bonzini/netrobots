@@ -29,8 +29,8 @@ NET_SRC = server/net_main.o server/net_utils.o server/net_commands.o server/net_
 all-networking:	 $(NET_SRC)
 	$(CC) -o server/netserver $(NET_SRC)
 server/net_main.o: server/net_main.c server/net_utils.h server/robotserver.h
-server/net_core.o: server/net_core.c server/robotserver.h server/net_utils.h
-server/net_commands.o: server/net_commands.c server/net_commands.h
+server/net_core.o: server/net_core.c server/robotserver.h server/net_utils.h server/net_defines.h
+server/net_commands.o: server/net_commands.c server/net_defines.h
 server/net_utils.o: server/net_utils.c server/net_utils.h
 
 clean-networking:
