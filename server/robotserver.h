@@ -1,19 +1,21 @@
 #ifndef ROBOTSERVER_H
 #define ROBOTSERVER_H 1
 
-struct missile {
-  int x, y;
+int const RELOAD_RATIO = 10;
+
+struct cannon {
+	int timeToReload;
+	int x, y;
 };
 
 struct robot {
   int fd;
-
   char *name;
-
   int x, y;
   int damage;
   int speed;
-  struct missile cannon[2];
+  int degree;
+  struct cannon cannon[2];
 
   /* info on what was done... */
 };
