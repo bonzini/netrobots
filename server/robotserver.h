@@ -25,6 +25,6 @@ int max_robots;
 
 int scan (struct robot *r, int degree, int resolution);
 int cannon (struct robot *r, int degree, int range);
-int drive (struct robot *r, int degree, int speed);
+void drive (struct robot *r, int degree, int speed);
 
 #endif

@@ -10,7 +10,7 @@ cannon (int degree,int range)
 {
 }
 
-int
+void
 drive (int degree,int speed)
 {
 }
