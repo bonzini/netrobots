@@ -11,13 +11,15 @@ all-logic:
 ## graphics
 CFLAGS = -g `pkg-config cairo --cflags` `pkg-config sdl --cflags` -O2
 LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs` -framework OpenGL
+MAIN_SRC = server/main.o server/anim.o server/drawing.o server/field.o 
 
-all-graphics: main: anim.o field.o drawing.o main.o
-
-anim.o: anim.c drawing.h
-field.o: field.c drawing.h field.h anim.h
-drawing.o: drawing.c drawing.h
-main.o: main.c drawing.h
+all-graphics: main
+main: $(MAIN_SRC)
+	$(CC) -o main $(MAIN_SRC) $(LDFLAGS)
+server/anim.o: server/anim.c server/drawing.h
+server/field.o: server/field.c server/drawing.h server/field.h server/anim.h
+server/drawing.o: server/drawing.c server/drawing.h
+server/main.o: server/main.c server/drawing.h server/anim.h server/field.h
 
 
 ## networking
