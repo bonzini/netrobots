@@ -89,11 +89,21 @@ ndprintf_die (FILE *fd, char *fmt, ...)
 	exit(EXIT_FAILURE);
 }
 
-void sockwrite (int fd, int status, char *msg)
+void sockwrite (int fd, int status, char *fmt, ...)
 {
-	char *str;
+	char *str, *tmp;
 
-	asprintf(&str, "%d %s", status, msg);
+	va_list vp;
+	if (fmt) {
+		va_start(vp, fmt);
+		vasprintf(&tmp, fmt, vp);
+		va_end(vp);
+		asprintf(&str, "%d %s", status, tmp);
+	}
+	else
+		asprintf(&str, "%d", status);
 	write(fd, str, strlen(str));
+	if (fmt)
+		free(tmp);
 	free(str);
 }

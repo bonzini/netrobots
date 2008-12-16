@@ -1,7 +1,7 @@
 #ifndef ROBOTSERVER_H
 #define ROBOTSERVER_H 1
 
-int const RELOAD_RATIO = 10;
+#define RELOAD_RATIO = 10;
 
 struct cannon {
 	int timeToReload;
@@ -9,7 +9,7 @@ struct cannon {
 };
 
 struct robot {
-  int fd;
+  // int fd; Should not be needed as it is synchronized with the array of fds
   char *name;
   int x, y;
   int damage;
@@ -20,7 +20,7 @@ struct robot {
   /* info on what was done... */
 };
 
-struct robot *all_robots;
+struct robot **all_robots;
 int max_robots;
 
 /* Interface from networking code to game logic.  */

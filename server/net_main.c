@@ -12,6 +12,9 @@
 #define STD_PORT "4300"
 
 extern int debug;
+extern int max_robots;
+
+struct robot **all_robots;
 
 void
 usage (char *prog, int retval)
@@ -58,6 +61,9 @@ main (int argc, char *argv[])
 
 	if (max_robots <= 0)
 		max_robots = STD_CLIENTS;
+
+	all_robots = (struct robot **) malloc(max_robots * sizeof(struct robot *));
+
 	server_init(hostname, port);
 	return 0;
 }
