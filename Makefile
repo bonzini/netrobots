@@ -14,7 +14,19 @@ all-graphics:
 
 ## networking
 
-all-networking:
+NET_SRC = server/net_main.o server/net_utils.o server/net_commands.o
+
+all-networking:	 $(NET_SRC)
+	$(CC) -o server/netserver $(NET_SRC)
+server/net_main.o: server/net_main.c server/net_utils.h
+server/net_commands.o: server/net_commands.c server/net_commands.h
+server/net_utils.o: server/net_utils.c server/net_utils.h
+
+clean-networking:
+	rm -rf server/net_*.o server/netserver
+
+clean-obj-networking:
+	rm -rf server/net_*.o
 
 ## robots
 
