@@ -65,6 +65,7 @@ argv_to_str (char **argv)
 	return buf;
 }
 
+
 void 
 ndprintf (FILE *fd, char *fmt, ...)
 {

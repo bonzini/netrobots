@@ -156,7 +156,7 @@ if ((range=scan(degree,2)) > 0) /* see if a target is there */
   cannon(degree,range);         /* if so, fire a missile */
 \end{verbatim}
 
-\item[\texttt{int drive (int degree,int speed)}]
+\item[\texttt{void drive (int degree,int speed)}]
         activates the engine, on a 
         specified heading and target speed.  Degree is forced into the range
         0-359 as in scan().  Speed is expressed as a percent, with 100 as
@@ -236,13 +236,14 @@ drive (180,0);   /* stop drive */
 \section{Network}
 
       \begin{enumerate}
-        \item Send current location to the robots - only if is the start cycle or they're not busy
-        \item Move and explode missiles - not the start cycle
+        
         \item Update display - TODO ( Eberli e Dominguez )
-        \item Wait 10 ms (minus the time that was used to update the display) -  
-        \item Receive commands from the robots - If no command received robot is busy = true, 
-        \item Send command replies to the robots - send FLAG ( 1 if ok 0 if not  ) + MESSAGE if necessary
-        \item Move robots
+        \item Wait 10 ms (minus the time that was used to update the display) 
+        \item Receive commands from the robots - If no command received robot is_busy =  true, 
+        \item Send command replies to the robots - send FLAG ( 1 if ok 0 if not  ) + COMMAND REPLY,
+    	        Send current location to the robots - only if is the start cycle or they're not busy
+        \item Move robots - update all robot structures \\
+           	Move and explode missiles - not the start cycle
         \end{enumerate}
 
 
