@@ -135,7 +135,7 @@ cycle_robot(struct robot *r)
 	r->speed = masiar;
 }
 */
-
+/*
 int
 main ()
 {
@@ -172,4 +172,4 @@ main ()
 	printf("Walle does not know where Eve is. The scan returns %dm\n", distance);
 	
 	
-}
+}*/
