@@ -39,38 +39,41 @@ create_client (int fd)
 }
 
 void
-execute_commands ()
+process_robots ()
 {
-	int i, ret;
+	int i, ret, to_talk = max_robots;
 	struct pollfd pfd;
 	cmd_t cmd;
 	char *buf;
 
 	for (i = 0; i < max_robots; i++)
-	{
-		pfd = fds[i];
-		if (pfd.fd == -1) // Dead robot
-			continue;
-		if (pfd.revents & POLLERR || pfd.revents & POLLHUP) { /* Error or disconnected robot -> kill */
-			pfd.fd = -1;
-			// kill_robot(i);
-			continue;
-		}
-		else if (pfd.revents & POLLOUT == 0)
-			continue;
-		if (pfd.revents & POLLIN) {
-			buf = (char *) malloc(STD_BUF * sizeof(char));
-			ret = read(pfd.fd, buf, STD_BUF);
-			switch (ret) {
-				case -1:
-					pfd.fd = -1;
-					// kill_robot(i);
-					break;
-				case 0:
-					break;
-				default:
-					//cmd = execute_cmd(buf);
-					break;
+		all_robots[i]->take_cmd = true;
+
+	while (poll(fds, max_robots, -1) > 0 && to_talk > 0) {
+		to_talk = 0;
+		for (i = 0; i < max_robots; i++) {
+			pfd = fds[i];
+			if (pfd.fd == -1) // Dead robot
+				continue;
+			if (pfd.revents & POLLERR || pfd.revents & POLLHUP) { /* Error or disconnected robot -> kill */
+				pfd.fd = -1;
+				// kill_robot(i);
+				continue;
+			}
+			else if (pfd.revents & POLLOUT == 0 || !all_robots[i]->take_cmd)
+				continue;
+			if (pfd.revents & POLLIN) {
+				buf = (char *) malloc(STD_BUF * sizeof(char));
+				ret = read(pfd.fd, buf, STD_BUF);
+				switch (ret) {
+					case -1:
+					case 0:
+						break;
+					default:
+						//cmd = execute_cmd(buf);
+						// if (normal_cmd) to_talk++;
+						break;
+				}
 			}
 		}
 	}
@@ -125,9 +128,7 @@ server_init (char *hostname, char *port)
 	while (1) {
 		// move_robots();
 		// fire_missiles();
-		ret = poll(fds, max_robots, -1);
-		if (ret > 0)
-			execute_commands();
+		process_robots();
 		// update_display();
 		// sleep();
 	}
