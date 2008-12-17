@@ -8,7 +8,7 @@
 #include "robotserver.h"
 
 #define STD_CLIENTS 5
-#define STD_HOSTNAME "127.0.0.1"
+#define STD_HOSTNAME NULL
 #define STD_PORT "4300"
 
 extern int debug;
@@ -56,7 +56,7 @@ main (int argc, char *argv[])
 		}
 	}
 
-	if (argc > optind || !hostname || !port)
+	if (argc > optind) /* || !hostname || !port)*/
 		usage(argv[0], EXIT_FAILURE);
 
 	if (max_robots <= 0)

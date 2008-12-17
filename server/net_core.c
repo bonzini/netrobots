@@ -123,10 +123,13 @@ server_init (char *hostname, char *port)
 		ndprintf_die(stderr, "[ERROR] bind(): %s\n", strerror(errno));
 	if (listen(sockd, max_robots))
 		ndprintf_die(stderr, "[ERROR] listen(): %s\n", strerror(errno));
-
+	/* To close the port after closing the socket */
+	int opt = 1;	
+	setsockopt (sockd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
+	
 	if (!(fds = (struct pollfd *) malloc (max_robots * sizeof(struct pollfd))))
 		ndprintf_die(stderr, "[ERROR] Coulnd't malloc space for fds!\n");
-
+	
 	while (1) { /* Wait for all the clients to connect */
 		fd = accept(sockd, (struct sockaddr *) &addr, &addrlen);
 		if (!create_client(fd))

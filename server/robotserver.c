@@ -3,6 +3,14 @@
 #import <stdio.h>
 #include <math.h>
 
+int lock_x(struct robot * r, int x) {
+	robot->x = x;
+}
+
+int lock_y(struct robot * r, int y) {
+	robot->y = y;
+}
+
 int
 standardizeDegree(int degree)
 {	
