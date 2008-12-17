@@ -41,7 +41,7 @@ create_client (int fd)
 void
 execute_commands ()
 {
-	int i, ret, c = 0;
+	int i, ret;
 	struct pollfd pfd;
 	cmd_t cmd;
 	char *buf;
@@ -60,16 +60,16 @@ execute_commands ()
 			continue;
 		if (pfd.revents & POLLIN) {
 			buf = (char *) malloc(STD_BUF * sizeof(char));
-			switch (read(pfd.fd, buf, STD_BUF)) {
+			ret = read(pfd.fd, buf, STD_BUF);
+			switch (ret) {
 				case -1:
 					pfd.fd = -1;
 					// kill_robot(i);
 					break;
-				case 1:
-					printf("%s - %d\n", buf, c++);
-					//cmd = execute_cmd(buf);
+				case 0:
 					break;
 				default:
+					//cmd = execute_cmd(buf);
 					break;
 			}
 		}
