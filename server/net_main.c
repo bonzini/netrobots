@@ -20,7 +20,7 @@ void
 usage (char *prog, int retval)
 {
 	printf("Usage %s [-n <clients> -H <hostname> -P <port> -d]\n"
-		"\t-n <clients>\tNumber of clients to start the game (has to be bigger than 0) (Default: 5)\n"
+		"\t-n <clients>\tNumber of clients to start the game (has to be bigger than 1) (Default: 5)\n"
 		"\t-H <hostname>\tSpecifies hostname (Default: 127.0.0.1)\n"
 		"\t-P <port>\tSpecifies port (Default: 4300)\n"
 		"\t-d\tEnables debug mode\n", prog);
@@ -59,7 +59,7 @@ main (int argc, char *argv[])
 	if (argc > optind) /* || !hostname || !port)*/
 		usage(argv[0], EXIT_FAILURE);
 
-	if (max_robots <= 0)
+	if (max_robots <= 1)
 		max_robots = STD_CLIENTS;
 
 	all_robots = (struct robot **) malloc(max_robots * sizeof(struct robot *));

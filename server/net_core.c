@@ -41,7 +41,7 @@ create_client (int fd)
 void
 process_robots ()
 {
-	int i, ret, to_talk = max_robots;
+	int i, ret, to_talk = 0, rfd;
 	struct pollfd pfd;
 	result_t result;
 	char buf[STD_BUF];
@@ -49,6 +49,21 @@ process_robots ()
 
 	for (i = 0; i < max_robots; i++)
 		all_robots[i]->take_cmd = true;
+
+	for (i = 0; i < max_robots; i++) {
+		if ((rfd = fds[i].fd) != -1)
+			to_talk++;
+	}
+	if (!to_talk)
+		ndprintf(stdout, "[GAME] Ended - No winner\n");
+	else if (to_talk == 1) {
+		ndprintf(stdout, "[GAME] Eneded - Winner found\n");
+		sockwrite(rfd, END, "Congratulations you are the winner!\n");
+		close(rfd);
+		exit(EXIT_SUCCESS);
+	}
+
+	to_talk = max_robots;
 
 	while (poll(fds, max_robots, -1) > 0 && to_talk > 0) {
 		to_talk = 0;
@@ -149,6 +164,7 @@ server_init (char *hostname, char *port)
 		if (current_robots >= max_robots)
 			break;
 	}
+	ndprintf(stdout, "[GAME] Starting. All clients connected!\n");
 	for (i = 0; i < max_robots; i++)
 		sockwrite(fds[i].fd, START, NULL);
 	while (1) {
