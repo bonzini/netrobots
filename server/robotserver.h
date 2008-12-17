@@ -15,6 +15,8 @@ struct robot {
   int damage;
   int speed;
   int degree;
+  int cannon_degree;
+  int radar_degree;
   struct cannon cannon[2];
 
   /* info on what was done... */

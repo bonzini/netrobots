@@ -49,7 +49,7 @@ draw_radar(cairo_t *cr, double direction)
 	
 	cairo_save(cr);
 	cairo_rotate(cr, direction);
-	cairo_set_source_rgba(cr, 0, 1, 0, 0.8);
+	cairo_set_source_rgba(cr, 1, 0, 0, 0.8);
 	cairo_move_to(cr, x1, y1);
 	cairo_line_to(cr, x2, y2);
 	cairo_line_to(cr, x3, y3);
@@ -66,8 +66,8 @@ draw_robot(cairo_t *cr, double x, double y, double size, double rotation)
 		y2=10,
 		x4=70,
 		x5=0, y5=-100;
-	double px2=-70, py2=70,
-		px3=70, py3=70,
+	double px2=-70, py2=100,
+		px3=70, py3=100,
 		px4=70, py4=10;
 	
 	cairo_save(cr);
