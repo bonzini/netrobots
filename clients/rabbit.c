@@ -22,8 +22,8 @@ int
 plot_course (int xx, int yy)
 {
   int x, y;
-  x = loc_x () - xx;
-  y = loc_y () - yy;
+  x = xx - loc_x ();
+  y = yy - loc_y ();
   return atan2 (y, x) * 180 / M_PI;
 }
 
