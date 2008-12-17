@@ -4,6 +4,12 @@
 #include <math.h>
 
 int 
+kill_robot(struct robot * r) {
+ /* TODO  damage = 100. and bla bla */
+	r->damage = 100;
+}
+
+int 
 loc_x (struct robot * r) 
 {
 	return r->x;
