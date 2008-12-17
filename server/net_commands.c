@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
 
+#include "robotserver.h"
 #include "net_utils.h"
 #include "net_defines.h"
 
@@ -20,10 +22,10 @@ result_t error_res = { -1, true, false };
 int cmdn = sizeof(cmds)/sizeof(cmd_t);
 
 result_t
-execute_cmd (char *input)
+execute_cmd (struct robot *robot, char *input)
 {
 	char **argv;
-	int argc;
+	int argc, ret, *args, i;
 	cmd_t cmd;
 	result_t res;
 
@@ -34,9 +36,21 @@ execute_cmd (char *input)
 	if (cmd.args != argc - 1)
 		return error_res;
 
+	if (!(args = (int *) malloc(cmd.args * sizeof(int))))
+		return error_res;
+	for (i = 1; i < argc; i++) {
+		if (!str_isnumber(argv[i]))
+			return error_res;
+		args[i - 1] = atoi(argv[i]);
+	}
+
+	ret = cmd.func(robot, args);
+	if (ret == -1)
+		return error_res;
+
+	res.result = ret;
 	res.cycle = cmd.cycle;
 	res.error = false;
-// 	res.result = cmd.func();
-
+ 	
 	return res;
 }

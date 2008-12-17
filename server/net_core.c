@@ -45,6 +45,7 @@ process_robots ()
 	struct pollfd pfd;
 	result_t result;
 	char *buf;
+	struct robot *robot;
 
 	for (i = 0; i < max_robots; i++)
 		all_robots[i]->take_cmd = true;
@@ -52,6 +53,7 @@ process_robots ()
 	while (poll(fds, max_robots, -1) > 0 && to_talk > 0) {
 		to_talk = 0;
 		for (i = 0; i < max_robots; i++) {
+			robot = all_robots[i];
 			pfd = fds[i];
 			if (pfd.fd == -1) // Dead robot
 				continue;
@@ -70,15 +72,16 @@ process_robots ()
 					case 0:
 						break;
 					default:
-						result = execute_cmd(buf);
+						result = execute_cmd(robot, buf);
 						if (result.error) {
+							sockwrite(pfd.fd, ERROR, "Violation of the protocol!");
 							pfd.fd = -1;
 							// kill_robot(i);
 						}
 						else {
 							if (!result.cycle)
 								to_talk++;
-							//answer
+							sockwrite(pfd.fd, OK, "%d", result.result);
 						}
 						break;
 				}
