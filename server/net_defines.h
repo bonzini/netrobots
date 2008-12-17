@@ -21,6 +21,7 @@ typedef struct result_t {
 #define OK 1
 #define START 2
 #define END 3
+#define DEAD 4
 
 void init_server(char *hostname, char *port);
 result_t execute_cmd (struct robot *robot, char *input);

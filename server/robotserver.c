@@ -3,7 +3,7 @@
 #import <stdio.h>
 #include <math.h>
 
-int 
+void
 kill_robot(struct robot * r) {
  /* TODO  damage = 100. and bla bla */
 	r->damage = 100;

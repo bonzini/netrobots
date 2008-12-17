@@ -39,5 +39,6 @@ int loc_x (struct robot *r);
 int loc_y (struct robot *r);
 int speed (struct robot *r);
 int damage (struct robot *r);
+void kill_robot (struct robot *r);
 
 #endif

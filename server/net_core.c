@@ -59,11 +59,16 @@ process_robots ()
 				continue;
 			if (pfd.revents & POLLERR || pfd.revents & POLLHUP) { /* Error or disconnected robot -> kill */
 				pfd.fd = -1;
-				// kill_robot(i);
+				kill_robot(robot);
 				continue;
 			}
 			else if (pfd.revents & POLLOUT == 0 || !all_robots[i]->take_cmd)
 				continue;
+			if (damage(robot) == 100) {
+				sockwrite(pfd.fd, DEAD, NULL);
+				pfd.fd = -1;
+				continue;
+			}
 			if (pfd.revents & POLLIN) {
 				buf = (char *) malloc(STD_BUF * sizeof(char));
 				ret = read(pfd.fd, buf, STD_BUF);
@@ -76,7 +81,7 @@ process_robots ()
 						if (result.error) {
 							sockwrite(pfd.fd, ERROR, "Violation of the protocol!");
 							pfd.fd = -1;
-							// kill_robot(i);
+							kill_robot(robot);
 						}
 						else {
 							if (!result.cycle)
@@ -88,6 +93,7 @@ process_robots ()
 						break;
 				}
 			}
+			fds[i] = pfd;
 		}
 	}
 }
