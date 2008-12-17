@@ -9,9 +9,9 @@ all: all-logic all-graphics all-networking all-robots
 all-logic:
 
 ## graphics
-CFLAGS = -g `pkg-config cairo --cflags` `pkg-config sdl --cflags` -O2
+CFLAGS = -g `pkg-config cairo --cflags` `pkg-config sdl --cflags`
 LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs` -framework OpenGL
-MAIN_SRC = server/main.o server/anim.o server/drawing.o server/field.o 
+MAIN_SRC = server/main.o server/anim.o server/drawing.o server/field.o server/robotserver.o 
 
 all-graphics: main
 main: $(MAIN_SRC)

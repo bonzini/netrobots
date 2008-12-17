@@ -16,9 +16,47 @@
 #include "drawing.h"
 #include "field.h"
 #include "anim.h"
+#include "robotserver.h"
 
 static cairo_t *map_context;
 
+/*
+ * transforms degrees in to radians
+ */
+double
+degtorad(int degrees)
+{
+	double radiants;
+	radiants = degrees * M_PI/180;
+	return radiants;
+}
+
+void
+shot_animation(cairo_t *cr)
+{
+	cairo_save (cr);
+	cairo_pattern_t *pat;
+	
+	pat = cairo_pattern_create_linear (128, 64,
+                                     128, 128.0);
+	cairo_pattern_add_color_stop_rgba (pat, 0, 1, 0, 0, 1);
+	cairo_pattern_add_color_stop_rgba (pat, 1, 1, 1, 0, 1);
+	cairo_set_source (cr, pat);
+	
+
+	cairo_move_to (cr, 32, 50);
+	cairo_arc_negative (cr, 32, 32, 18, 90 * (M_PI/180.0), 0);
+	cairo_arc_negative (cr, 68, 32, 18, M_PI, 90 * (M_PI/180.0));
+	cairo_arc_negative (cr, 50, 50, 18, M_PI, 0);
+	cairo_fill (cr);
+	cairo_pattern_destroy (pat);
+	cairo_restore(cr);
+
+}
+
+/*
+ *draws the cannon with the right orientation
+ */
 void
 draw_cannon(cairo_t *cr, double direction)
 {
@@ -40,6 +78,9 @@ draw_cannon(cairo_t *cr, double direction)
 	cairo_restore(cr);
 }
 
+/*
+ *draws the radar inside the robot with the right orientation
+ */
 void
 draw_radar(cairo_t *cr, double direction)
 {
@@ -59,8 +100,12 @@ draw_radar(cairo_t *cr, double direction)
 	cairo_restore(cr);
 }
 
+/*
+ *draws a robot with a given size, using the various parameters(orientation, position,..)
+ *from the robot struct
+ */
 void
-draw_robot(cairo_t *cr, double x, double y, double size, double rotation)
+draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 {
 	double x1=-70, y1=-30,
 		y2=10,
@@ -72,10 +117,10 @@ draw_robot(cairo_t *cr, double x, double y, double size, double rotation)
 	
 	cairo_save(cr);
 	
-	cairo_translate(cr, x, y);
+	cairo_translate(cr, myRobot->x, 1000 - myRobot->y);
 	cairo_scale(cr, size, size);
 	cairo_save(cr);
-	cairo_rotate(cr, rotation);
+	cairo_rotate(cr, degtorad(myRobot->degree));
 	
 	cairo_set_source_rgba (cr, 0.2, 0.4, 0.5, 0.6);
 	cairo_set_line_width (cr, 2);
@@ -94,8 +139,9 @@ draw_robot(cairo_t *cr, double x, double y, double size, double rotation)
 	
 	cairo_stroke (cr);
 	cairo_restore(cr);
-	draw_cannon(cr, 3.14);
-	draw_radar(cr, 4.71);
+	draw_cannon(cr, degtorad(myRobot->cannon_degree));
+	draw_radar(cr, degtorad(myRobot->radar_degree));
+	shot_animation(cr);
 	cairo_restore(cr);
 }
 
@@ -114,21 +160,20 @@ init_map (void)
 void
 do_map (cairo_t *cr, SDL_Event *event)
 {
-  cairo_save (cr);
+	int i;
+	cairo_save (cr);
   
-  cairo_set_source_rgb(cr, 1, 1, 1);
-  cairo_paint(cr);
-
-	draw_robot(cr, 200, 200, 0.5, 1);
+	cairo_set_source_rgb(cr, 1, 1, 1);
+	cairo_paint(cr);
+	cairo_scale(cr, WIN_HEIGHT/1000.0, WIN_HEIGHT/1000.0);
+	for(i = 0; i < max_robots; i++){
+		draw_robot(cr, all_robots[i], 0.5);
+		}
 	cairo_restore(cr);	
-/*
-  cairo_save (cairo_context);
+/* cairo_save (cairo_context);
   cairo_set_operator (cairo_context, CAIRO_OPERATOR_SOURCE);
   cairo_set_source_surface (cairo_context, cairo_get_target (map_context), 0, 0);
   cairo_paint (cairo_context);
-  cairo_restore (cairo_context);
-
-  render_map_marching_squares (cairo_context, civil_rise_set, 0.25);
-  render_map_marching_squares (cairo_context, sun_rise_set, 0.33);*/
+  cairo_restore (cairo_context);*/
 }
 
