@@ -81,6 +81,8 @@ process_robots ()
 						else {
 							if (!result.cycle)
 								to_talk++;
+							else
+								robot->take_cmd = false;
 							sockwrite(pfd.fd, OK, "%d", result.result);
 						}
 						break;
