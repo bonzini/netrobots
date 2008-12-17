@@ -7,19 +7,75 @@
 #include "net_utils.h"
 #include "net_defines.h"
 
+int cmd_cycle (struct robot *robot, int *args);
+int cmd_cannon (struct robot *robot, int *args);
+int cmd_scan (struct robot *robot, int *args);
+int cmd_loc_x (struct robot *robot, int *args);
+int cmd_loc_y (struct robot *robot, int *args);
+int cmd_damage (struct robot *robot, int *args);
+int cmd_speed (struct robot *robot, int *args);
+int cmd_drive (struct robot *robot, int *args);
+
 cmd_t cmds[] = {
-	{ NULL, 0, true }, // CYCLE
-	{ NULL, 2, true }, // CANNON
-	{ NULL, 2, true }, // SCAN
-	{ NULL, 1, false }, // LOC_X
-	{ NULL, 1, false }, // LOC_Y
-	{ NULL, 1, false }, // DAMAGE
-	{ NULL, 1, false }, // SPEED
+	{ cmd_cycle, 0, true }, // CYCLE
+	{ cmd_cannon, 2, true }, // CANNON
+	{ cmd_scan, 2, true }, // SCAN
+	{ cmd_loc_x, 1, false }, // LOC_X
+	{ cmd_loc_y, 1, false }, // LOC_Y
+	{ cmd_damage, 1, false }, // DAMAGE
+	{ cmd_speed, 1, false }, // SPEED
+	{ cmd_drive, 2, true }, // MOVE
 };
 
 result_t error_res = { -1, true, false };
 
 int cmdn = sizeof(cmds)/sizeof(cmd_t);
+
+
+int
+cmd_cycle (struct robot *robot, int *args)
+{
+	return 1;
+}
+
+int 
+cmd_scan (struct robot *robot, int *args)   
+{
+	return scan(robot, args[0], args[1]);
+}
+
+int 
+cmd_cannon (struct robot *robot, int *args)   
+{
+	return cannon(robot, args[0], args[1]);
+}
+
+int 
+cmd_loc_x (struct robot *robot, int *args)   
+{
+}
+
+int 
+cmd_loc_y (struct robot *robot, int *args)   
+{
+}
+
+int 
+cmd_damage (struct robot *robot, int *args)   
+{
+}
+
+int 
+cmd_speed (struct robot *robot, int *args)   
+{
+}
+
+int
+cmd_drive (struct robot *robot, int *args)
+{
+	drive(robot, args[0], args[1]);
+	return 1;
+}
 
 result_t
 execute_cmd (struct robot *robot, char *input)

@@ -1,6 +1,8 @@
 #ifndef ROBOTSERVER_H
 #define ROBOTSERVER_H 1
 
+#include <stdbool.h>
+
 #define RELOAD_RATIO 10
 
 struct cannon {
@@ -11,6 +13,7 @@ struct cannon {
 struct robot {
   // int fd; Should not be needed as it is synchronized with the array of fds
   char *name;
+  bool take_cmd;
   int x, y;
   int damage;
   int speed;
