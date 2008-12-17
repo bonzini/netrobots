@@ -15,5 +15,6 @@ typedef struct cmd_t {
 #define END 3
 
 void init_server(char *hostname, char *port);
+cmd_t execute_cmd (char *input);
 
 #endif

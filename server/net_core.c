@@ -17,18 +17,11 @@ struct pollfd *fds;
 extern int max_robots;
 extern struct robot **all_robots;
 
-void
-create_pollfd (int fd)
-{
-	struct pollfd pollfd;
-	pollfd = fds[current_robots];
-	pollfd.events = POLLIN;
-	pollfd.fd = fd;
-}
-
 int
 create_client (int fd)
 {
+	struct pollfd pollfd;
+
 	if (fd == -1)
 		return 0;
 	struct robot *r;
@@ -36,7 +29,11 @@ create_client (int fd)
 		return 0;
 	r->x = r->y = r->speed = r->damage = 0;
 	r->name = NULL;
-	create_pollfd(fd);
+
+	pollfd.fd = fd;
+	pollfd.events = POLLIN | POLLOUT;
+
+	fds[current_robots] = pollfd;
 	all_robots[current_robots++] = r;
 	return 1;
 }
@@ -44,7 +41,7 @@ create_client (int fd)
 void
 execute_commands ()
 {
-	int i;
+	int i, ret, c = 0;
 	struct pollfd pfd;
 	cmd_t cmd;
 	char *buf;
@@ -57,11 +54,24 @@ execute_commands ()
 		if (pfd.revents & POLLERR || pfd.revents & POLLHUP) { /* Error or disconnected robot -> kill */
 			pfd.fd = -1;
 			// kill_robot(i);
-		}
-		else if (!(pfd.revents & POLLOUT) || !(pfd.revents & POLLIN)) /* Cannot write to the fd / Nothing to be read ... continue */
 			continue;
-		while (pfd.revents & POLLIN) {
-			//buf = (char *) malloc(STD_BUF * sizeof(char));
+		}
+		else if (pfd.revents & POLLOUT == 0)
+			continue;
+		if (pfd.revents & POLLIN) {
+			buf = (char *) malloc(STD_BUF * sizeof(char));
+			switch (read(pfd.fd, buf, STD_BUF)) {
+				case -1:
+					pfd.fd = -1;
+					// kill_robot(i);
+					break;
+				case 1:
+					printf("%s - %d\n", buf, c++);
+					//cmd = execute_cmd(buf);
+					break;
+				default:
+					break;
+			}
 		}
 	}
 }
@@ -116,7 +126,7 @@ server_init (char *hostname, char *port)
 		// move_robots();
 		// fire_missiles();
 		ret = poll(fds, max_robots, -1);
-		if (ret)
+		if (ret > 0)
 			execute_commands();
 		// update_display();
 		// sleep();
