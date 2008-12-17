@@ -107,3 +107,16 @@ void sockwrite (int fd, int status, char *fmt, ...)
 		free(tmp);
 	free(str);
 }
+
+int
+str_isnumber (char *str)
+{
+	const int len = strlen(str);
+	int i;
+
+	for (i = 0; i < len; i++) {
+		if (!isnumber(str[i]))
+			return 0;
+	}
+	return 1;
+}

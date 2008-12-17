@@ -9,12 +9,18 @@ typedef struct cmd_t {
 	bool cycle;
 } cmd_t;
 
+typedef struct result_t {
+	int result;
+	bool error;
+	bool cycle;
+} result_t;
+
 #define ERROR 0
 #define OK 1
 #define START 2
 #define END 3
 
 void init_server(char *hostname, char *port);
-cmd_t execute_cmd (char *input);
+result_t execute_cmd (char *input);
 
 #endif

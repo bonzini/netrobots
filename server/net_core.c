@@ -43,7 +43,7 @@ process_robots ()
 {
 	int i, ret, to_talk = max_robots;
 	struct pollfd pfd;
-	cmd_t cmd;
+	result_t result;
 	char *buf;
 
 	for (i = 0; i < max_robots; i++)
@@ -70,8 +70,16 @@ process_robots ()
 					case 0:
 						break;
 					default:
-						//cmd = execute_cmd(buf);
-						// if (normal_cmd) to_talk++;
+						result = execute_cmd(buf);
+						if (result.error) {
+							pfd.fd = -1;
+							// kill_robot(i);
+						}
+						else {
+							if (!result.cycle)
+								to_talk++;
+							//answer
+						}
 						break;
 				}
 			}
