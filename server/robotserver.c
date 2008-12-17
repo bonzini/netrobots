@@ -3,12 +3,28 @@
 #import <stdio.h>
 #include <math.h>
 
-int lock_x(struct robot * r, int x) {
-	robot->x = x;
+int 
+loc_x (struct robot * r) 
+{
+	return r->x;
 }
 
-int lock_y(struct robot * r, int y) {
-	robot->y = y;
+int 
+loc_y (struct robot * r) 
+{
+	return r->y;
+}
+
+int 
+speed (struct robot *r)
+{
+	return r->speed;
+}
+
+int
+damage (struct robot *r)
+{
+	return r->damage;
 }
 
 int
