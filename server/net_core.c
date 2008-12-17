@@ -5,26 +5,25 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <sys/poll.h>
+#include <stdio.h>
 
 #include "net_utils.h"
 #include "net_defines.h"
 #include "robotserver.h"
 
 int current_robots = 0;
-struct pollfd **fds;
+struct pollfd *fds;
 
 extern int max_robots;
 extern struct robot **all_robots;
 
-struct pollfd *
+void
 create_pollfd (int fd)
 {
-	struct pollfd *pollfd;
-	if (!(pollfd = (struct pollfd *) malloc (sizeof(struct pollfd))))
-		return NULL;
-	pollfd->events = POLLIN;
-	pollfd->fd = fd;
-	return pollfd;
+	struct pollfd pollfd;
+	pollfd = fds[current_robots];
+	pollfd.events = POLLIN;
+	pollfd.fd = fd;
 }
 
 int
@@ -33,16 +32,38 @@ create_client (int fd)
 	if (fd == -1)
 		return 0;
 	struct robot *r;
-	struct pollfd *pollfd;
 	if (!(r = (struct robot *) malloc (sizeof(struct robot))))
-		return 0;
-	if (!(pollfd = create_pollfd(fd)))
 		return 0;
 	r->x = r->y = r->speed = r->damage = 0;
 	r->name = NULL;
-	fds[current_robots] = pollfd;
+	create_pollfd(fd);
 	all_robots[current_robots++] = r;
 	return 1;
+}
+
+void
+execute_commands ()
+{
+	int i;
+	struct pollfd pfd;
+	cmd_t cmd;
+	char *buf;
+
+	for (i = 0; i < max_robots; i++)
+	{
+		pfd = fds[i];
+		if (pfd.fd == -1) // Dead robot
+			continue;
+		if (pfd.revents & POLLERR || pfd.revents & POLLHUP) { /* Error or disconnected robot -> kill */
+			pfd.fd = -1;
+			// kill_robot(i);
+		}
+		else if (!(pfd.revents & POLLOUT) || !(pfd.revents & POLLIN)) /* Cannot write to the fd / Nothing to be read ... continue */
+			continue;
+		while (pfd.revents & POLLIN) {
+			//buf = (char *) malloc(STD_BUF * sizeof(char));
+		}
+	}
 }
 
 void
@@ -79,7 +100,7 @@ server_init (char *hostname, char *port)
 	if (listen(sockd, max_robots))
 		ndprintf_die(stderr, "[ERROR] listen(): %s\n", strerror(errno));
 
-	if (!(fds = (struct pollfd **) malloc (max_robots * sizeof(struct pollfd *))))
+	if (!(fds = (struct pollfd *) malloc (max_robots * sizeof(struct pollfd))))
 		ndprintf_die(stderr, "[ERROR] Coulnd't malloc space for fds!\n");
 
 	while (1) { /* Wait for all the clients to connect */
@@ -90,8 +111,14 @@ server_init (char *hostname, char *port)
 			break;
 	}
 	for (i = 0; i < max_robots; i++)
-		sockwrite(fds[i]->fd, START, NULL);
+		sockwrite(fds[i].fd, START, NULL);
 	while (1) {
-		// Proces clients requests and answer
+		// move_robots();
+		// fire_missiles();
+		ret = poll(fds, max_robots, -1);
+		if (ret)
+			execute_commands();
+		// update_display();
+		// sleep();
 	}
 }
