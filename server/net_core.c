@@ -44,7 +44,7 @@ process_robots ()
 	int i, ret, to_talk = max_robots;
 	struct pollfd pfd;
 	result_t result;
-	char *buf;
+	char buf[STD_BUF];
 	struct robot *robot;
 
 	for (i = 0; i < max_robots; i++)
@@ -58,6 +58,7 @@ process_robots ()
 			if (pfd.fd == -1) // Dead robot
 				continue;
 			if (pfd.revents & POLLERR || pfd.revents & POLLHUP) { /* Error or disconnected robot -> kill */
+				close(pfd.fd);
 				pfd.fd = -1;
 				kill_robot(robot);
 				continue;
@@ -66,11 +67,12 @@ process_robots ()
 				continue;
 			if (damage(robot) == 100) {
 				sockwrite(pfd.fd, DEAD, NULL);
+				close(pfd.fd);
 				pfd.fd = -1;
 				continue;
 			}
 			if (pfd.revents & POLLIN) {
-				buf = (char *) malloc(STD_BUF * sizeof(char));
+				memset(buf, 0x0, STD_BUF);
 				ret = read(pfd.fd, buf, STD_BUF);
 				switch (ret) {
 					case -1:
@@ -79,7 +81,8 @@ process_robots ()
 					default:
 						result = execute_cmd(robot, buf);
 						if (result.error) {
-							sockwrite(pfd.fd, ERROR, "Violation of the protocol!");
+							sockwrite(pfd.fd, ERROR, "Violation of the protocol!\n");
+							close(pfd.fd);
 							pfd.fd = -1;
 							kill_robot(robot);
 						}
@@ -133,7 +136,8 @@ server_init (char *hostname, char *port)
 		ndprintf_die(stderr, "[ERROR] listen(): %s\n", strerror(errno));
 	/* To close the port after closing the socket */
 	int opt = 1;	
-	setsockopt (sockd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
+	if (setsockopt(sockd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt)) == -1)
+		ndprintf_die(stderr, "[ERROR] setsockopt(): %s\n", strerror(errno));
 	
 	if (!(fds = (struct pollfd *) malloc (max_robots * sizeof(struct pollfd))))
 		ndprintf_die(stderr, "[ERROR] Coulnd't malloc space for fds!\n");
