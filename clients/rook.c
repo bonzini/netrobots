@@ -3,7 +3,7 @@
 /* move horizontally only, but looks horz and vertically */
 
 #include "robots.h"
-
+#include <stdio.h>
 int course;
 int boundary;
 
@@ -44,6 +44,12 @@ look (int deg)
 int
 main ()
 {
+	printf("Started rook");
+	if(client_init(DEFAULT_REMOTEHOST, DEFAULT_PORT)) {
+	  printf("could not connect to : %s:%s\n", DEFAULT_REMOTEHOST, DEFAULT_PORT);
+		return 1;
+  }
+	printf("connected\n");
   int y;
 
   /* move to center of board */
