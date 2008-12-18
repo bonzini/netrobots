@@ -28,7 +28,9 @@ create_client (int fd)
 	struct robot *r;
 	if (!(r = (struct robot *) malloc (sizeof(struct robot))))
 		return 0;
-	r->x = r->y = r->speed = r->damage = 0;
+	r->x = 1000 * (rand() / (double) RAND_MAX);
+	r->y = 1000 * (rand() / (double) RAND_MAX);
+	r->speed = r->damage = 0;
 	r->name = NULL;
 
 	pollfd.fd = fd;
