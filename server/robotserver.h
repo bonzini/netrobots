@@ -31,7 +31,7 @@ int max_robots;
 
 /* Interface from networking code to game logic.  */
 
-int scan (struct robot *r, int degree, int resolution);
+double scan (struct robot *r, int degree, int resolution);
 int cannon (struct robot *r, int degree, int range);
 void drive (struct robot *r, int degree, int speed);
 void cycle (void);

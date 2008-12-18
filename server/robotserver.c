@@ -4,19 +4,20 @@
 #include <math.h>
 
 void
-kill_robot(struct robot * r) {
- /* TODO  damage = 100. and bla bla */
+kill_robot(struct robot *r) {
+	r->x = -1000;
+	r->y = -1000;
 	r->damage = 100;
 }
 
 int 
-loc_x (struct robot * r) 
+loc_x (struct robot *r) 
 {
 	return r->x;
 }
 
 int 
-loc_y (struct robot * r) 
+loc_y (struct robot *r) 
 {
 	return r->y;
 }
@@ -43,7 +44,7 @@ standardizeDegree(int degree)
 	return result % 360;
 }
 
-int
+double
 getDistance(int x1, int y1, int x2, int y2)
 {
 	int x, y;
@@ -58,47 +59,50 @@ compute_angle(int x1, int y1, int x2, int y2)
 	return standardizeDegree(-atan2(y2 - y1,x2 - x1) * 180/M_PI);
 }
 
-int
+double
 scan (struct robot *r, int degree, int resolution)
 {
-	int min_distance = 1500;
+	double min_distance = 1500.0;
 	int posx = r->x;
 	int posy = r->y;
-	int n_robots = 2; //sizeof(**all_robots) / sizeof(struct robot);
-	//printf("n_robots %d\n", n_robots);
+	int i,angle_between_robots,upper_angle,bottom_angle;
+	double distance;
 	//printf("x %d\n", posx);
 	//printf("y %d\n", posy);
-	
-	int i,distance,angle_between_robots,upper_angle,bottom_angle;
 
 	if(resolution > 10 && resolution < 0){
 		return -1;
 	}
 	
 	degree = standardizeDegree(degree);
+	
+	r->radar_degree = degree;
+	
 	//printf("degree %d\n", degree);
 	upper_angle = degree + resolution;
 	bottom_angle = degree - resolution;
 
-	for(i = 0; i < n_robots; i++){
-		angle_between_robots = compute_angle(posx, posy, all_robots[i]->x, all_robots[i]->y);
-		//printf("name: %s angle_b2en %d\n",all_robots[i]->name, angle_between_robots);
-		if(angle_between_robots <= upper_angle && angle_between_robots >= bottom_angle){
-			distance =  getDistance(posx, posy, all_robots[i]->x, all_robots[i]->y);
-			if(distance < min_distance && distance != 0){
-				min_distance = distance;
+	for(i = 0; i < max_robots; i++){
+		if(all_robots[i]->damage < 100){
+			angle_between_robots = compute_angle(posx, posy, all_robots[i]->x, all_robots[i]->y);
+			//printf("name: %s angle_b2en %d\n",all_robots[i]->name, angle_between_robots);
+			if(angle_between_robots <= upper_angle && angle_between_robots >= bottom_angle){
+				distance =  getDistance(posx, posy, all_robots[i]->x, all_robots[i]->y);
+				if(distance < min_distance && distance != 0){
+					min_distance = distance;
+				}
 			}
 		}
 	}
-	if(1500 == min_distance) return 0;
+	if(1500.0 == min_distance) return 0;
 	return min_distance;
 }
 
 int
 cannon (struct robot *r, int degree, int range)
 {
-	int n_robots = sizeof(*all_robots) / sizeof(struct robot);
-	int x,y,i,freeSlot,distance_from_center;
+	int i,freeSlot;
+	double distance_from_center, x, y;
 	/* If the cannon is not reloading, meaning it's ready the robottino shoots otherwise break */
 	for(freeSlot = 0; freeSlot < 2; freeSlot++)
 		if(r->cannon[freeSlot].timeToReload == 0) break;
@@ -110,18 +114,28 @@ cannon (struct robot *r, int degree, int range)
 	/* If we reach that point the missile could be shot */
 	if(range > 700)
 		range = 700;
-	degree = standardizeDegree(degree);
-	x = cos(degree * 180/M_PI) * range + r->x;
-	y = sin(degree * 180/M_PI) * range + r->y;
 	
-	for(i = 0; i < n_robots; i++){
-		distance_from_center = getDistance(all_robots[i]->x, all_robots[y]->y, x, y);
-		if(distance_from_center <= 5)
-			all_robots[i]->damage += 10;
-		else if(distance_from_center <= 20)
-			all_robots[i]->damage += 5;
-		else if(distance_from_center <= 40)
-			all_robots[i]->damage += 3;
+	degree = standardizeDegree(degree);
+	
+	r->cannon_degree = degree;
+	
+	printf("Degree %d, Cos %g, Sin %g\n", degree, cos(degree), sin(degree));
+	
+	x = cos(degree) * range + r->x;
+	y = sin(degree) * range + r->y;
+	
+	printf("x%g, y%g\n", x,y);
+	
+	for(i = 0; i < max_robots; i++){
+		if(all_robots[i]->damage < 100){
+			distance_from_center = getDistance(all_robots[i]->x, all_robots[i]->y, x, y);
+			if(distance_from_center <= 5.0)
+				all_robots[i]->damage += 10;
+			else if(distance_from_center <= 20.0)
+				all_robots[i]->damage += 5;
+			else if(distance_from_center <= 40.0)
+				all_robots[i]->damage += 3;
+		}
 	}
 	
 	r->cannon[freeSlot].timeToReload = RELOAD_RATIO;
@@ -157,14 +171,15 @@ cycle_robot(struct robot *r)
 	r->speed = masiar;
 }
 */
-/*
+
 int
 main ()
 {
 	struct robot walle = {
 		"Wall-E",
+		true,
 		100, 100,
-		0, 0, 0, 0, 45, 45,
+		0, 0, 0, 0, 0, 0,
 		{
 			{ 0, 0, 0 },
 			{ 0, 0, 0 }			
@@ -173,6 +188,7 @@ main ()
 	
 	struct robot eve = {
 		"Eve",
+		true,
 		500, 500,
 		0, 0, 0, 0, 0, 0,
 		{
@@ -181,17 +197,31 @@ main ()
 		}
 	};
 	
-	struct robot *robogang[2];
+	struct robot masiar = {
+		"Bubi",
+		true,
+		300, 300,
+		0, 0, 0, 0, 0, 0,
+		{
+			{ 0, 0, 0 },
+			{ 0, 0, 0 }			
+		}
+	};
+	
+	struct robot *robogang[3];
 	robogang[0] = &walle;
 	robogang[1] = &eve;
+	robogang[2] = &masiar;
 	
 	all_robots = robogang;
+	max_robots = 3;
 	
-	int distance = scan(&walle, 315, 10);
-	printf("Eve is at %dm from Walle\n", distance);
+	double distance = scan(&walle, 315, 10);
+	printf("Closest robot is at %gm from Walle\n", distance);
+		
+	int result = cannon(&walle, 315, distance);
+	printf("Walle shots the closest robot! Its damage is now %d\n", masiar.damage);	
 	
 	distance = scan(&walle, 305, 9);
-	printf("Walle does not know where Eve is. The scan returns %dm\n", distance);
-	
-	
-}*/
+	printf("Walle seems to be alone. The scan returns %dm\n", distance);
+}
