@@ -122,7 +122,7 @@ process_robots ()
 void
 server_init (char *hostname, char *port)
 {
-	int sockd, ret, fd, i;
+	int sockd, ret, fd, i, opt = 1;
 	struct addrinfo *ai, *runp, hints;
 	struct sockaddr *addr;
 	socklen_t addrlen = sizeof(addr);
@@ -150,15 +150,14 @@ server_init (char *hostname, char *port)
 	}
 	if (sockd == -1)
 		ndprintf_die(stderr, "[ERROR] socket(): Couldn't create socket!\n");
+
+	/* To close the port after closing the socket */
+	if (setsockopt(sockd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt)) == -1)
+		ndprintf_die(stderr, "[ERROR] setsockopt(): %s\n", strerror(errno));
 	if (bind(sockd, runp->ai_addr, runp->ai_addrlen))
 		ndprintf_die(stderr, "[ERROR] bind(): %s\n", strerror(errno));
 	if (listen(sockd, max_robots))
 		ndprintf_die(stderr, "[ERROR] listen(): %s\n", strerror(errno));
-	/* To close the port after closing the socket */
-	int opt = 1;	
-	if (setsockopt(sockd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt)) == -1)
-		ndprintf_die(stderr, "[ERROR] setsockopt(): %s\n", strerror(errno));
-	
 	if (!(fds = (struct pollfd *) malloc (max_robots * sizeof(struct pollfd))))
 		ndprintf_die(stderr, "[ERROR] Coulnd't malloc space for fds!\n");
 	
@@ -177,11 +176,11 @@ server_init (char *hostname, char *port)
 		// fire_missiles();
 		process_robots();
 		gettimeofday(&time, NULL);
-		start = 10000000 + time.tv_sec * 1000000.0 + time.tv_usec;
+		end = 1000000 + time.tv_sec * 1000000.0 + time.tv_usec;
 		// update_display();
                 gettimeofday(&time, NULL);
-                end = start - (time.tv_sec * 1000000.0 + time.tv_usec);
-	//	if (end > 0)
-	//		usleep(end);
+                start = (time.tv_sec * 1000000.0 + time.tv_usec);
+		if (end - start > 0)
+			usleep(end - start);
 	}
 }

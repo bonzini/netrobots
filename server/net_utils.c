@@ -14,25 +14,28 @@ str_to_argv (char *str, char ***argv)
 
 	*argv = NULL;
 
-	if (!(targv = (char **) malloc((1 + alloc) *sizeof(char *))))
+	if (!*str || !(targv = (char **) malloc((1 + alloc) *sizeof(char *))))
 		return argc;
 
-	while (*str) {
-		if (argc >= MAX_ARGC)
-			break;
-		else if (argc >= alloc) {
-			alloc *= 2;
-			if (!(targv = (char **) realloc(targv, (1 + alloc) * sizeof(char *))))
-				return argc;
-		}
-		if (isspace(*str))
+	for (;;) {
+		while (*str && isspace(*str))
 			*str++ = '\0';
 		if (!*str)
 			break;
 
+		if (argc >= MAX_ARGC)
+			break;
+
+		if (argc >= alloc) {
+			alloc *= 2;
+			if (!(targv = (char **) realloc(targv, (1 + alloc) * sizeof(char *))))
+				return argc;
+		}
 		targv[argc++] = str;
 		while(*str && !isspace(*str))
 			str++;
+		if (!*str)
+			break;
 	}
 	targv[argc] = NULL;
 	*argv = targv;

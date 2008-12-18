@@ -94,12 +94,15 @@ execute_cmd (struct robot *robot, char *input)
 	if (!argc || !str_isnumber(argv[0]) || atoi(argv[0]) < 0 || atoi(argv[0]) >= cmdn)
 		return error_res;
 	cmd = cmds[atoi(argv[0])];
+
 	if (cmd.args != argc - 1)
 		return error_res;
 
 	if (!(args = (int *) malloc(cmd.args * sizeof(int))))
 		return error_res;
+
 	for (i = 1; i < argc; i++) {
+		printf("%s\n", argv[i]);
 		if (!str_isnumber(argv[i]))
 			return error_res;
 		args[i - 1] = atoi(argv[i]);
