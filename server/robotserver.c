@@ -119,12 +119,12 @@ cannon (struct robot *r, int degree, int range)
 	
 	r->cannon_degree = degree;
 	
-	printf("Degree %d, Cos %g, Sin %g\n", degree, cos(degree * M_PI/180), sin(degree * M_PI/180));
+	//printf("Degree %d, Cos %g, Sin %g\n", degree, cos(degree * M_PI/180), sin(degree * M_PI/180));
 	
-	x = fabs(cos(degree * M_PI/180)) * range + r->x;
-	y = fabs(sin(degree * M_PI/180)) * range + r->y;
+	x = cos(degree * M_PI/180) * range + r->x;
+	y = -sin(degree * M_PI/180) * range + r->y;
 	
-	printf("x%d, y%d\n", x,y);
+	//printf("x%d, y%d\n", x,y);
 	
 	for(i = 0; i < max_robots; i++){
 		if(all_robots[i]->damage < 100){
@@ -152,20 +152,31 @@ drive (struct robot *r, int degree, int speed)
 	degree = standardizeDegree(degree);
 	if(r->speed >= 50)
 		degree = r->degree;
+	
+	
+	if(speed > r->target_speed)
+		r->speed = speed;
 	r->target_speed = speed;
 	r->degree = degree;
-	r->break_distance = speed / 10 * 4;
+	r->break_distance = BREAK_DISTANCE;
 }
 
 static void
 cycle_robot(struct robot *r)
 {
-	r->x += cos(r->degree * 180/M_PI) * r->speed * SPEED_RATIO;
-	r->y += sin(r->degree * 180/M_PI) * r->speed * SPEED_RATIO;
+	r->x += cos(r->degree * M_PI/180) * r->speed * SPEED_RATIO;
+	r->y -= sin(r->degree * M_PI/180) * r->speed * SPEED_RATIO;
+	
+	//printf("Degree %d, Cos %g, Sin %g, Speed %d\n", r->degree , cos(r->degree  * M_PI/180), sin(r->degree  * M_PI/180), r->speed);
+	
 	if(r->break_distance == 0)
 		r->speed = r->target_speed;
-	else
+	
+	if(r->target_speed < r->speed){
+		r->speed += (r->target_speed - r->speed) / r->break_distance;
 		r->break_distance--;
+	}
+	
 	/*Decreasing the time to reload the missiles*/
 	int i;
 	for(i = 0; i < 2; i++){
@@ -181,58 +192,4 @@ cycle()
 	for(i = 0; i < max_robots; i++)
 		if(all_robots[i]->damage < 100)
 			cycle_robot(all_robots[i]);
-}
-
-int
-test ()
-{
-	struct robot walle = {
-		"Wall-E",
-		true,
-		100, 100,
-		0, 0, 0, 0, 0, 0, 0,
-		{
-			{ 0, 0, 0 },
-			{ 0, 0, 0 }	
-		}
-	};
-	
-	struct robot eve = {
-		"Eve",
-		true,
-		500, 500,
-		0, 0, 0, 0, 0, 0, 0,
-		{
-			{ 0, 0, 0 },
-			{ 0, 0, 0 }			
-		}
-	};
-	
-	struct robot masiar = {
-		"Bubi",
-		true,
-		300, 300,
-		0, 0, 0, 0, 0, 0, 0,
-		{
-			{ 0, 0, 0 },
-			{ 0, 0, 0 }			
-		}
-	};
-	
-	struct robot *robogang[3];
-	robogang[0] = &walle;
-	robogang[1] = &eve;
-	robogang[2] = &masiar;
-	
-	all_robots = robogang;
-	max_robots = 3;
-	
-	int distance = scan(&walle, 315, 10);
-	printf("Closest robot is at %dm from Walle\n", distance);
-		
-	int result = cannon(&walle, 315, distance);
-	printf("Walle shots the closest robot! Its damage is now %d\n", masiar.damage);	
-	
-	distance = scan(&walle, 305, 9);
-	printf("Walle seems to be alone. The scan returns %dm\n", distance);
 }

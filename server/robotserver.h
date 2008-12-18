@@ -3,8 +3,9 @@
 
 #include <stdbool.h>
 
-#define RELOAD_RATIO 10
-#define SPEED_RATIO 10
+#define RELOAD_RATIO 300
+#define SPEED_RATIO 0.04
+#define BREAK_DISTANCE (0.7 / SPEED_RATIO)
 
 struct cannon {
 	int timeToReload;
@@ -15,7 +16,7 @@ struct robot {
   // int fd; Should not be needed as it is synchronized with the array of fds
   char *name;
   bool take_cmd;
-  int x, y;
+  double x, y;
   int damage;
   int speed;
   int break_distance;

@@ -5,8 +5,9 @@ all: all-logic all-graphics all-networking all-robots
 ## ------------------------------------
 
 ## logic
-
 all-logic:
+server/robotserver.o: server/robotserver.h
+server/testlogic.o: server/testlogic.c server/robotserver.h
 
 ## graphics
 CFLAGS = -g `pkg-config cairo --cflags` `pkg-config sdl --cflags`
