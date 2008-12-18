@@ -20,10 +20,10 @@ cmd_t cmds[] = {
 	{ cmd_cycle, 0, true }, // CYCLE
 	{ cmd_cannon, 2, true }, // CANNON
 	{ cmd_scan, 2, true }, // SCAN
-	{ cmd_loc_x, 1, false }, // LOC_X
-	{ cmd_loc_y, 1, false }, // LOC_Y
-	{ cmd_damage, 1, false }, // DAMAGE
-	{ cmd_speed, 1, false }, // SPEED
+	{ cmd_loc_x, 0, false }, // LOC_X
+	{ cmd_loc_y, 0, false }, // LOC_Y
+	{ cmd_damage, 0, false }, // DAMAGE
+	{ cmd_speed, 0, false }, // SPEED
 	{ cmd_drive, 2, true }, // MOVE
 };
 
@@ -102,7 +102,6 @@ execute_cmd (struct robot *robot, char *input)
 		return error_res;
 
 	for (i = 1; i < argc; i++) {
-		printf("%s\n", argv[i]);
 		if (!str_isnumber(argv[i]))
 			return error_res;
 		args[i - 1] = atoi(argv[i]);

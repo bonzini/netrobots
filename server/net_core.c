@@ -32,91 +32,109 @@ create_client (int fd)
 	r->name = NULL;
 
 	pollfd.fd = fd;
-	pollfd.events = POLLIN | POLLOUT;
 
 	fds[current_robots] = pollfd;
 	all_robots[current_robots++] = r;
 	return 1;
 }
 
+static volatile int timer;
+
+void raise_timer (int sig)
+{
+	timer = 1;
+}
+
 void
 process_robots ()
 {
-	int i, ret, to_talk = 0, rfd;
-	struct pollfd pfd;
+	int i, ret, rfd;
+	struct pollfd *pfd;
 	result_t result;
 	char buf[STD_BUF];
 	struct robot *robot;
+	int to_talk;
 
 	for (i = 0; i < max_robots; i++)
-		all_robots[i]->take_cmd = true;
+		fds[i].events = POLLIN | POLLOUT;
 
-	for (i = 0; i < max_robots; i++) {
-		if (fds[i].fd != -1) {
-			to_talk++;
-			rfd = fds[i].fd;
-		}
-	}
-	if (!to_talk)
-		ndprintf(stdout, "[GAME] Ended - No winner\n");
-	else if (to_talk == 1) {
-		ndprintf(stdout, "[GAME] Ended - Winner found\n");
-		sockwrite(rfd, END, "Congratulations you are the winner!\n");
-		close(rfd);
-		exit(EXIT_SUCCESS);
-	}
-
-	to_talk = max_robots;
-
-	while (poll(fds, max_robots, -1) > 0 && to_talk > 0) {
+	do {
 		to_talk = 0;
 		for (i = 0; i < max_robots; i++) {
+			if (fds[i].fd != -1) {
+				to_talk++;
+				rfd = fds[i].fd;
+			}
+		}
+
+		if (to_talk <= 1) {
+			if (to_talk == 0)
+				ndprintf(stdout, "[GAME] Ended - No winner\n");
+			else {
+				ndprintf(stdout, "[GAME] Ended - Winner found\n");
+				sockwrite(rfd, END, "Congratulations you are the winner!\n");
+				close(rfd);
+			}
+			exit(EXIT_SUCCESS);
+		}
+
+		poll(fds, max_robots, 10);
+		for (i = 0; i < max_robots; i++) {
 			robot = all_robots[i];
-			pfd = fds[i];
-			if (pfd.fd == -1) // Dead robot
+			pfd = &fds[i];
+			if (pfd->fd == -1) // Dead robot
 				continue;
-			if (pfd.revents & POLLERR || pfd.revents & POLLHUP) { /* Error or disconnected robot -> kill */
-				close(pfd.fd);
-				pfd.fd = -1;
+
+			if (pfd->revents & (POLLERR | POLLHUP)) { /* Error or disconnected robot -> kill */
+				close(pfd->fd);
+				pfd->fd = -1;
 				kill_robot(robot);
 				continue;
 			}
-			else if (pfd.revents & POLLOUT == 0 || !all_robots[i]->take_cmd)
-				continue;
-			if (damage(robot) == 100) {
-				sockwrite(pfd.fd, DEAD, NULL);
-				close(pfd.fd);
-				pfd.fd = -1;
+			if (robot->damage >= 100) {
+				sockwrite(pfd->fd, DEAD, NULL);
+				close(pfd->fd);
+				pfd->fd = -1;
 				continue;
 			}
-			if (pfd.revents & POLLIN) {
-				memset(buf, 0x0, STD_BUF);
-				ret = read(pfd.fd, buf, STD_BUF);
-				switch (ret) {
-					case -1:
-					case 0:
-						break;
-					default:
-						result = execute_cmd(robot, buf);
-						if (result.error) {
-							sockwrite(pfd.fd, ERROR, "Violation of the protocol!\n");
-							close(pfd.fd);
-							pfd.fd = -1;
-							kill_robot(robot);
-						}
-						else {
-							if (!result.cycle)
-								to_talk++;
-							else
-								robot->take_cmd = false;
-							sockwrite(pfd.fd, OK, "%d", result.result);
-						}
-						break;
-				}
+
+			if (!(pfd->revents & POLLIN))
+				continue;
+
+			if (!(pfd->revents & POLLOUT)) {
+				close(pfd->fd);
+				pfd->fd = -1;
+				kill_robot(robot);
+				continue;
 			}
-			fds[i] = pfd;
+
+			ret = read(pfd->fd, buf, STD_BUF);
+			switch (ret) {
+				case -1:
+					close(pfd->fd);
+					pfd->fd = -1;
+					kill_robot(robot);
+					break;
+				case 0:
+					abort ();
+				default:
+					buf[ret] = '\0';
+					result = execute_cmd(robot, buf);
+					if (result.error) {
+						sockwrite(pfd->fd, ERROR, "Violation of the protocol!\n");
+						close(pfd->fd);
+						pfd->fd = -1;
+						kill_robot(robot);
+					}
+					else {
+						if (result.cycle)
+							pfd->events = 0;
+						sockwrite(pfd->fd, OK, "%d", result.result);
+					}
+					break;
+			}
 		}
-	}
+	} while (!timer);
 }
 
 void
@@ -126,7 +144,6 @@ server_init (char *hostname, char *port)
 	struct addrinfo *ai, *runp, hints;
 	struct sockaddr *addr;
 	socklen_t addrlen = sizeof(addr);
-	struct timeval time;
 	double start, end;
     
 	memset (&hints, 0x0, sizeof (hints));
@@ -171,16 +188,20 @@ server_init (char *hostname, char *port)
 	ndprintf(stdout, "[GAME] Starting. All clients connected!\n");
 	for (i = 0; i < max_robots; i++)
 		sockwrite(fds[i].fd, START, NULL);
+
+	signal (SIGALRM, raise_timer);
 	while (1) {
-		// move_robots();
-		// fire_missiles();
+		struct itimerval itv;
+		itv.it_interval.tv_sec = 0;
+		itv.it_interval.tv_usec = 0;
+		itv.it_value.tv_sec = 0;
+		itv.it_value.tv_usec = 10000;
+
+		setitimer (ITIMER_REAL, &itv, NULL);
+		timer = 0;
+		cycle();
+
+		//update_display();
 		process_robots();
-		gettimeofday(&time, NULL);
-		end = 1000000 + time.tv_sec * 1000000.0 + time.tv_usec;
-		// update_display();
-                gettimeofday(&time, NULL);
-                start = (time.tv_sec * 1000000.0 + time.tv_usec);
-		if (end - start > 0)
-			usleep(end - start);
 	}
 }

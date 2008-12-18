@@ -1,8 +1,6 @@
 #ifndef ROBOTSERVER_H
 #define ROBOTSERVER_H 1
 
-#include <stdbool.h>
-
 #define RELOAD_RATIO 300
 #define SPEED_RATIO 0.04
 #define BREAK_DISTANCE (0.7 / SPEED_RATIO)
@@ -15,7 +13,6 @@ struct cannon {
 struct robot {
   // int fd; Should not be needed as it is synchronized with the array of fds
   char *name;
-  bool take_cmd;
   double x, y;
   int damage;
   int speed;
