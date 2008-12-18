@@ -14,9 +14,10 @@ str_to_argv (char *str, char ***argv)
 
 	*argv = NULL;
 
-	if (!*str || !(targv = (char **) malloc((1 + alloc) *sizeof(char *))))
+	if (!*str)
 		return argc;
-
+	if (!(targv = (char **) malloc((1 + alloc) *sizeof(char *))))
+		return -1;
 	for (;;) {
 		while (*str && isspace(*str))
 			*str++ = '\0';
@@ -94,18 +95,20 @@ ndprintf_die (FILE *fd, char *fmt, ...)
 }
 
 void
-printf_die (char *fmt, int err, ...)
+printf_die (FILE *fd, char *fmt, int err, ...)
 {
 	va_list vp;
 	va_start(vp, err);
-	vfprintf(stderr, fmt, vp);
+	vfprintf(fd, fmt, vp);
 	va_end(vp);
 	exit(err);
 }
 
-void sockwrite (int fd, int status, char *fmt, ...)
+int
+sockwrite (int fd, int status, char *fmt, ...)
 {
 	char *str, *tmp;
+	int ret;
 
 	va_list vp;
 	if (fmt) {
@@ -116,10 +119,11 @@ void sockwrite (int fd, int status, char *fmt, ...)
 	}
 	else
 		asprintf(&str, "%d", status);
-	write(fd, str, strlen(str));
+	ret = write(fd, str, strlen(str));
 	if (fmt)
 		free(tmp);
 	free(str);
+	return ret;
 }
 
 int
@@ -129,6 +133,8 @@ str_isnumber (char *str)
 	int i;
 
 	for (i = 0; i < len; i++) {
+		if (i == 0 && str[i] == '-')
+			continue;
 		if (!isnumber(str[i]))
 			return 0;
 	}

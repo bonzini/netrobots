@@ -16,7 +16,7 @@ int str_to_argv (char *str, char ***argv);
 char *argv_to_str (char **argv);
 void ndprintf (FILE *fd, char *fmt, ...);
 void ndprintf_die (FILE *fd, char *fmt, ...);
-void sockwrite (int fd, int status, char *fmt, ...);
+int sockwrite (int fd, int status, char *fmt, ...);
 int str_isnumber (char *str);
 
 #endif

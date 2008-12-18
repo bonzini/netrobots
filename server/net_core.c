@@ -75,6 +75,7 @@ process_robots ()
 			else {
 				ndprintf(stdout, "[GAME] Ended - Winner found\n");
 				sockwrite(rfd, END, "Congratulations you are the winner!\n");
+				while ((ret = read(rfd, buf, STD_BUF)) && ret != -1);
 				close(rfd);
 			}
 			exit(EXIT_SUCCESS);
