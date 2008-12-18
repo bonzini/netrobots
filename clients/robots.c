@@ -54,6 +54,16 @@ client_init(char * remotehost, char * port) {
 	return result;
 }
 
+
+int 
+get_resp_value() {
+	char resp[STD_RESP_LEN];
+	read(serverfd, resp, STD_RESP_LEN);
+	if(resp[0])  /* check the status */
+		return resp[1];
+	else -1;
+}
+
 int
 scan (int degree,int resolution)
 {
@@ -61,66 +71,58 @@ scan (int degree,int resolution)
 	char argv[4] = { degree, ' ', resolution, '\0'};
 	sockwrite(serverfd, SCAN, argv);
 	/* Retrieve response : TODO ... */
-	char resp[STD_RESP_LEN];
-	read(serverfd, resp, STD_RESP_LEN);
-	return resp[0]; /* Returns the status */
-	
+	return get_resp_value();	
 }
+
 
 int
 cannon (int degree,int range)
 {
-	/*
 	char argv[4] = { degree, ' ', range, '\0'};
 	sockwrite(serverfd, CANNON, argv);
-	 */
+	return get_resp_value();
 }
 
 void
 drive (int degree,int speed)
-{/*
+{
 	char argv[4] = { degree, ' ', speed, '\0'};
 	sockwrite(serverfd, DRIVE, argv);
- */
+	get_resp_value();
 }
 
 int
 damage()
 {
-	/*
 	sockwrite(serverfd, DAMAGE, "");
-	*/
+	return get_resp_value();
 }
 
 void
 cycle ()
 {
-	/*
 	sockwrite(serverfd, CYCLE, "");
-	 */
+	get_resp_value();
 
 }
 
 int
 speed()
 {
-	/*
 	sockwrite(serverfd, SPEED, "");
-	*/
+	return get_resp_value();
 }
 
 int
 loc_x()
 {
-	/*
 	sockwrite(serverfd, LOC_X,"");
-	*/
+	return get_resp_value();
 }
 
 int
 loc_y()
 {
-	/*
 	sockwrite(serverfd, LOC_Y, "");
-	 */
+	return get_resp_value();
 }
