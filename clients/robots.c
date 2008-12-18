@@ -64,8 +64,10 @@ get_resp_value()
 	int count;
 	count = read(serverfd, resp, STD_RESP_LEN);
 	if(count > 0 && resp[0]) {
-		eval_response(resp[0]);
 		resp[count] = '\0';
+		eval_response(atoi(&resp[0]));
+		resp[0] = ' ';
+		if(debugc) printf("%s\n", resp);
 		char ** argv; 
 		int result;
 		if(str_to_argv(resp, &argv) >= 2)
@@ -82,22 +84,22 @@ int
 eval_response(int resp) {
 		switch (resp) {
 			case ERROR : {
-				if(debugc)printf("ERROR");
+				if(debugc)printf("[ERROR]");
 				// TODO
 				break;
 			}
 			case END : {
-				if(debugc)printf("END");
+				if(debugc)printf("[END]");
 				// TODO
 				break;
 			}
 			case START : {
-				if(debugc) printf("START");
+				if(debugc) printf("[START]");
 				// TODO
 				break;
 			}
 			case DEAD : {
-				if(debugc) printf("DEAD");
+				if(debugc) printf("[DEAD]");
 				// TODO
 				break;
 			}
@@ -119,16 +121,15 @@ scan (int degree,int resolution)
 int
 cannon (int degree,int range)
 {
-	char argv[4] = { degree, ' ', range, '\0'};
-	sockwrite(serverfd, CANNON, argv);
+	
+	sockwrite(serverfd, CANNON, "%d %d", degree, range);
 	return get_resp_value();
 }
 
 void
 drive (int degree,int speed)
 {
-	char argv[4] = { degree, ' ', speed, '\0'};
-	sockwrite(serverfd, DRIVE, argv);
+	sockwrite(serverfd, DRIVE,  "%d %d", degree, speed);
 	get_resp_value();
 }
 
