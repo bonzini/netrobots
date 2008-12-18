@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <sys/poll.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 #include "net_utils.h"
 #include "net_defines.h"
@@ -51,13 +52,15 @@ process_robots ()
 		all_robots[i]->take_cmd = true;
 
 	for (i = 0; i < max_robots; i++) {
-		if ((rfd = fds[i].fd) != -1)
+		if (fds[i].fd != -1) {
 			to_talk++;
+			rfd = fds[i].fd;
+		}
 	}
 	if (!to_talk)
 		ndprintf(stdout, "[GAME] Ended - No winner\n");
 	else if (to_talk == 1) {
-		ndprintf(stdout, "[GAME] Eneded - Winner found\n");
+		ndprintf(stdout, "[GAME] Ended - Winner found\n");
 		sockwrite(rfd, END, "Congratulations you are the winner!\n");
 		close(rfd);
 		exit(EXIT_SUCCESS);
@@ -123,6 +126,8 @@ server_init (char *hostname, char *port)
 	struct addrinfo *ai, *runp, hints;
 	struct sockaddr *addr;
 	socklen_t addrlen = sizeof(addr);
+	struct timeval time;
+	double start, end;
     
 	memset (&hints, 0x0, sizeof (hints));
 	hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
@@ -171,7 +176,12 @@ server_init (char *hostname, char *port)
 		// move_robots();
 		// fire_missiles();
 		process_robots();
+		gettimeofday(&time, NULL);
+		start = 10000000 + time.tv_sec * 1000000.0 + time.tv_usec;
 		// update_display();
-		// sleep();
+                gettimeofday(&time, NULL);
+                end = start - (time.tv_sec * 1000000.0 + time.tv_usec);
+	//	if (end > 0)
+	//		usleep(end);
 	}
 }
