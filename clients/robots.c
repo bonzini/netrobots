@@ -8,7 +8,7 @@
 #include <netdb.h>
 #include "../server/net_utils.h"
 #include "../server/net_utils.c"
-#include "../server/net_command_list.h"
+#include "../common/net_command_list.h"
 
 int debugc = 1;
 
@@ -45,36 +45,66 @@ client_init(char * remotehost, char * port)
 			if(debugc) printf("[NETWORK] connecting to server...\n");
 			if(connect (sock, runp->ai_addr, runp->ai_addrlen) == 0) {
 				if(debugc) printf("[NETWORK] connected to server\n");
-				result = 0;
+				serverfd = sock;
+				result = get_resp_value();
 				break;
 			}
 			close(sock);	
 		}
 		runp = runp->ai_next;
 	}
-
 	freeaddrinfo(ai);
-	serverfd = sock;
 	return result;
 }
 
 int 
 get_resp_value() 
 {
-	/*
-	char resp[STD_RESP_LEN];
+	char resp[STD_RESP_LEN + 1];
 	int count;
 	count = read(serverfd, resp, STD_RESP_LEN);
 	if(count > 0 && resp[0]) {
+		eval_response(resp[0]);
+		resp[count] = '\0';
 		char ** argv; 
 		int result;
-		str_to_argv(resp, &argv);
-		result = atoi(argv[1]);
-		free_argv(&argv);
+		if(str_to_argv(resp, &argv) >= 2)
+			result = atoi(argv[1]);
+		else
+			result = 0;
+		free(argv);
 		return result;
 	}
 	else return -1;
-*/
+}
+
+int 
+eval_response(int resp) {
+		switch (resp) {
+			case ERROR : {
+				if(debugc)printf("ERROR");
+				// TODO
+				break;
+			}
+			case END : {
+				if(debugc)printf("END");
+				// TODO
+				break;
+			}
+			case START : {
+				if(debugc) printf("START");
+				// TODO
+				break;
+			}
+			case DEAD : {
+				if(debugc) printf("DEAD");
+				// TODO
+				break;
+			}
+			default:
+				break;
+		}
+	return resp;
 }
 
 int
@@ -120,20 +150,20 @@ cycle ()
 int
 speed()
 {
-	sockwrite(serverfd, SPEED, "");
+	sockwrite(serverfd, SPEED, NULL);
 	return get_resp_value();
 }
 
 int
 loc_x()
 {
-	sockwrite(serverfd, LOC_X,"");
+	sockwrite(serverfd, LOC_X, NULL);
 	return get_resp_value();
 }
 
 int
 loc_y()
 {
-	sockwrite(serverfd, LOC_Y, "");
+	sockwrite(serverfd, LOC_Y, NULL);
 	return get_resp_value();
 }

@@ -13,13 +13,25 @@ kill_robot(struct robot *r) {
 int 
 loc_x (struct robot *r) 
 {
-	return r->x;
+	/* Convert 0.5 ... 999.5 to 0 ... 1000 */
+	int x = (r->x - 0.5) * 1000 / 999;
+	if (x < 0)
+		x = 0;
+	if (x > 999)
+		x = 999;
+	return x;
 }
 
 int 
 loc_y (struct robot *r) 
 {
-	return r->y;
+	/* Convert 0.5 ... 999.5 to 0 ... 1000 */
+	int y = (r->y - 0.5) * 1000 / 999;
+	if (y < 0)
+		y = 0;
+	if (y > 999)
+		y = 999;
+	return y;
 }
 
 int 

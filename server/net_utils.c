@@ -43,16 +43,6 @@ str_to_argv (char *str, char ***argv)
 	return argc;
 }
 
-void 
-free_argv(char ***argv) {
-	char ** target; 
-	while(*argv) {
-		target = *argv;
-		argv++;
-		free(target);
-	}
-}
-
 char *
 argv_to_str (char **argv)
 {

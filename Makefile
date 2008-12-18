@@ -10,7 +10,7 @@ server/robotserver.o: server/robotserver.h
 server/testlogic.o: server/testlogic.c server/robotserver.h
 
 ## graphics
-CFLAGS = -g `pkg-config cairo --cflags` `pkg-config sdl --cflags`
+CFLAGS = -g `pkg-config cairo --cflags` `pkg-config sdl --cflags` -Icommon
 LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs` -framework OpenGL
 MAIN_SRC = server/main.o server/anim.o server/drawing.o server/field.o server/robotserver.o 
 

@@ -9,3 +9,8 @@
 #define DRIVE 7
 
 
+#define ERROR 0
+#define OK 1
+#define START 2
+#define END 3
+#define DEAD 4

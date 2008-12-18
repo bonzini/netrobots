@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "robotserver.h"
+#include "net_command_list.h"
 
 typedef struct cmd_t {
 	int (*func) (struct robot *robot, int *args);
@@ -17,11 +18,6 @@ typedef struct result_t {
 	bool cycle;
 } result_t;
 
-#define ERROR 0
-#define OK 1
-#define START 2
-#define END 3
-#define DEAD 4
 
 void init_server(char *hostname, char *port);
 result_t execute_cmd (struct robot *robot, char *input);
