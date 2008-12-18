@@ -206,4 +206,6 @@ server_init (char *hostname, char *port)
 		//update_display();
 		process_robots();
 	}
+	freeaddrinfo(ai);
+	exit(EXIT_FAILURE);
 }
