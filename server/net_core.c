@@ -94,7 +94,7 @@ process_robots ()
 				continue;
 			}
 			if (robot->damage >= 100) {
-				sockwrite(pfd->fd, DEAD, NULL);
+				sockwrite(pfd->fd, DEAD, "Sorry!");
 				close(pfd->fd);
 				pfd->fd = -1;
 				continue;
@@ -189,7 +189,7 @@ server_init (char *hostname, char *port)
 	}
 	ndprintf(stdout, "[GAME] Starting. All clients connected!\n");
 	for (i = 0; i < max_robots; i++)
-		sockwrite(fds[i].fd, START, NULL);
+		sockwrite(fds[i].fd, START, "Let's play!");
 
 	signal (SIGALRM, raise_timer);
 	while (1) {

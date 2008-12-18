@@ -25,15 +25,15 @@ server/main.o: server/main.c server/drawing.h server/anim.h server/field.h
 
 ## networking
 
-NET_SRC = server/net_main.o server/net_utils.o server/net_commands.o server/net_core.o server/robotserver.o
+NET_SRC = server/net_main.o common/net_utils.o server/net_commands.o server/net_core.o server/robotserver.o
 
 all-networking:	 $(NET_SRC)
 	$(CC) -o server/netserver $(NET_SRC)
 server/robotserver.o: server/robotserver.h
-server/net_main.o: server/net_main.c server/net_utils.h server/robotserver.h
-server/net_core.o: server/net_core.c server/robotserver.h server/net_utils.h server/net_defines.h
+server/net_main.o: server/net_main.c common/net_utils.h server/robotserver.h
+server/net_core.o: server/net_core.c server/robotserver.h common/net_utils.h server/net_defines.h
 server/net_commands.o: server/net_commands.c server/net_defines.h server/robotserver.h
-server/net_utils.o: server/net_utils.c server/net_utils.h
+common/net_utils.o: common/net_utils.c common/net_utils.h
 
 clean-networking:
 	rm -rf server/net_*.o server/netserver
@@ -44,12 +44,13 @@ clean-obj-networking:
 ## robots
 
 ROBOTS = counter rabbit rook sniper
+LIBROBOTS_OBJS = clients/robots.o common/net_utils.o
 
 all-robots: $(ROBOTS)
 
 clients/robots.o: clients/robots.c
-robots.a: clients/robots.o
-	cd clients && ar cru ../robots.a robots.o
+robots.a: $(LIBROBOTS_OBJS)
+	ar cru $@ $(LIBROBOTS_OBJS)
 
 counter: clients/counter.c clients/robots.h robots.a
 	$(CC) -o $@ $< robots.a

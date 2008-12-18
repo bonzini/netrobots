@@ -6,16 +6,60 @@
 #include <stdio.h>
 #include <errno.h>
 #include <netdb.h>
-#include "../server/net_utils.h"
-#include "../server/net_utils.c"
-#include "../common/net_command_list.h"
+#include <stdlib.h>
 
-int debugc = 1;
+#include "net_utils.h"
+#include "net_command_list.h"
 
+#undef main
 
-int serverfd;
+static int serverfd;
 
-int
+static int 
+eval_response(int resp) {
+		switch (resp) {
+			case END:
+				printf_die("You win!\n", 0);
+				break;
+			case DEAD:
+				printf_die("You are dead!\n", 1);
+				break;
+			case START:
+			case OK:
+				break;
+			case ERROR:
+			default:
+				printf_die("Error detected.. exiting!\n", 2);
+				break;
+		}
+	return resp;
+}
+
+static int 
+get_resp_value() 
+{
+	char resp[STD_RESP_LEN + 1], **argv;
+	int count, result = -1, argc;
+
+	count = read(serverfd, resp, STD_RESP_LEN);
+	
+
+	if (count > 0) {
+		resp[count] = '\0';
+		argc = str_to_argv(resp, &argv);
+		if (argc >= 1 && str_isnumber(argv[0])) {
+			eval_response(atoi(argv[0]));
+			if (argc >= 2 && str_isnumber(argv[1]))
+				result = atoi(argv[1]);
+			else
+				result = 0;
+		}
+		free(argv);
+	}
+	return result;
+}
+
+static int
 client_init(char * remotehost, char * port) 
 {
 	int result = 1;
@@ -27,24 +71,18 @@ client_init(char * remotehost, char * port)
 	hints.ai_flags = AI_ADDRCONFIG;
 	hints.ai_socktype = SOCK_STREAM;
 	
-	if(ret = getaddrinfo (remotehost, port, &hints, &ai)) {
-		printf("[ERROR] getaddrinfo\n");
-		//ndprintf_die(stderr, "[ERROR] getaddrinfo('%s', '%s'): %s\n",remotehost, port, gai_strerror(ret));
-	}
-	if(!ai) {
-		printf("[ERROR] couldn't fill struct\n");
-		//ndprintf_die(stderr, "[ERROR] getaddrinf(): couldn't fill the struct!\n");
-	}
-	if(debugc)printf("addrinfo OK\n");
+	if(ret = getaddrinfo (remotehost, port, &hints, &ai))
+		printf_die("[ERROR] getaddrinfo('%s', '%s'): %s\n", EXIT_FAILURE, remotehost, port, gai_strerror(ret));
+	if(!ai)
+		printf_die("[ERROR] getaddrinf(): couldn't fill the struct!\n", EXIT_FAILURE);
 	struct addrinfo *runp = ai;
 	runp = ai;
 	while (runp) {
 		sock = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
-		printf("opened socket");
 		if (sock != -1) {
-			if(debugc) printf("[NETWORK] connecting to server...\n");
+			ndprintf(stdout, "[NETWORK] Connecting to server...\n");
 			if(connect (sock, runp->ai_addr, runp->ai_addrlen) == 0) {
-				if(debugc) printf("[NETWORK] connected to server\n");
+				ndprintf(stdout, "[NETWORK] connected to server\n");
 				serverfd = sock;
 				result = get_resp_value();
 				break;
@@ -57,56 +95,20 @@ client_init(char * remotehost, char * port)
 	return result;
 }
 
-int 
-get_resp_value() 
+
+static void
+signal_handler (int sig)
 {
-	char resp[STD_RESP_LEN + 1];
-	int count;
-	count = read(serverfd, resp, STD_RESP_LEN);
-	if(count > 0 && resp[0]) {
-		resp[count] = '\0';
-		eval_response(atoi(&resp[0]));
-		resp[0] = ' ';
-		if(debugc) printf("%s\n", resp);
-		char ** argv; 
-		int result;
-		if(str_to_argv(resp, &argv) >= 2)
-			result = atoi(argv[1]);
-		else
-			result = 0;
-		free(argv);
-		return result;
-	}
-	else return -1;
+	printf_die ("Server dead\n", 2);
 }
 
-int 
-eval_response(int resp) {
-		switch (resp) {
-			case ERROR : {
-				if(debugc)printf("[ERROR]");
-				// TODO
-				break;
-			}
-			case END : {
-				if(debugc)printf("[END]");
-				// TODO
-				break;
-			}
-			case START : {
-				if(debugc) printf("[START]");
-				// TODO
-				break;
-			}
-			case DEAD : {
-				if(debugc) printf("[DEAD]");
-				// TODO
-				break;
-			}
-			default:
-				break;
-		}
-	return resp;
+int
+main (int argc, char **argv)
+{
+	if(client_init(DEFAULT_REMOTEHOST, DEFAULT_PORT))
+		printf_die("could not connect to : %s:%s\n", EXIT_FAILURE, DEFAULT_REMOTEHOST, DEFAULT_PORT);
+	signal (SIGPIPE, signal_handler);
+	rmain ();
 }
 
 int

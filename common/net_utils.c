@@ -93,6 +93,16 @@ ndprintf_die (FILE *fd, char *fmt, ...)
 	exit(EXIT_FAILURE);
 }
 
+void
+printf_die (char *fmt, int err, ...)
+{
+	va_list vp;
+	va_start(vp, err);
+	vfprintf(stderr, fmt, vp);
+	va_end(vp);
+	exit(err);
+}
+
 void sockwrite (int fd, int status, char *fmt, ...)
 {
 	char *str, *tmp;

@@ -44,23 +44,19 @@ look (int deg)
 int
 main ()
 {
-	printf("Started rook");
-	if(client_init(DEFAULT_REMOTEHOST, DEFAULT_PORT)) {
-	  printf("could not connect to : %s:%s\n", DEFAULT_REMOTEHOST, DEFAULT_PORT);
-		return 1;
-  }
-	printf("connected\n");
   int y;
 
   /* move to center of board */
   if (loc_y () < 500)
     {
+      y = 90;
       drive (90, 70);		/* start moving */
-      while (loc_y () - 500 < 20 && speed () > 0)	/* stop near center */
+      while (500 - loc_y () > 20 && speed () > 0)	/* stop near center */
 	cycle ();
     }
   else
     {
+      y = 270;
       drive (270, 70);		/* start moving */
       while (loc_y () - 500 > 20 && speed () > 0)	/* stop near center */
 	cycle ();
