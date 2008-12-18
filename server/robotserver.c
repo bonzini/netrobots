@@ -165,7 +165,6 @@ drive (struct robot *r, int degree, int speed)
 	if(r->speed >= 50)
 		degree = r->degree;
 	
-	
 	if(speed > r->target_speed)
 		r->speed = speed;
 	r->target_speed = speed;
@@ -173,9 +172,71 @@ drive (struct robot *r, int degree, int speed)
 	r->break_distance = BREAK_DISTANCE;
 }
 
+#define TOL   (sin(M_PI/360))
+
 static void
 cycle_robot(struct robot *r)
 {
+	if(r->x >= 1000 + TOL || r->x <= -TOL || r->y >= 1000 + TOL || r->y <= -TOL){
+		r->damage += 2;
+		r->speed = 0;
+		r->break_distance = 0;
+		r->target_speed = 0;
+	}
+	
+	if (r->x >= 1000){
+		r->x = 1000;
+		r->speed = 0;
+		r->break_distance = 0;
+		r->target_speed = 0;
+	}
+	
+	if (r->x <= 0){
+		r->x = 0;
+		r->speed = 0;
+		r->break_distance = 0;
+		r->target_speed = 0;
+	}
+	
+	if (r->y >= 1000){
+		r->y = 1000;
+		r->speed = 0;
+		r->break_distance = 0;
+		r->target_speed = 0;
+	}
+
+	if (r->y <= 0){
+		r->y = 0;
+		r->speed = 0;
+		r->break_distance = 0;
+		r->target_speed = 0;
+	}
+	
+	int i;
+	for(i = 0; i < max_robots; i++)
+		if((int)r->x == (int)all_robots[i]->x && (int)r->y == (int)all_robots[i]->y){
+			if(all_robots[i] != r){
+				r->damage += 2;
+				r->speed = 0;
+				r->break_distance = 0;
+				r->target_speed = 0;
+				all_robots[i]->damage += 2;
+				all_robots[i]->speed = 0;
+				all_robots[i]->break_distance = 0;
+				all_robots[i]->target_speed = 0;
+				if(r->x > 0){
+					r->x -= 1;
+				} else {
+					r->x += 1;
+				}
+				if(r->y > 0){
+					r->y -= 1;
+				} else {
+					r->y += 1;
+				}
+			}
+		}
+	
 	r->x += cos(r->degree * M_PI/180) * r->speed * SPEED_RATIO;
 	r->y -= sin(r->degree * M_PI/180) * r->speed * SPEED_RATIO;
 	
@@ -190,7 +251,6 @@ cycle_robot(struct robot *r)
 	}
 	
 	/*Decreasing the time to reload the missiles*/
-	int i;
 	for(i = 0; i < 2; i++){
 		if(r->cannon[i].timeToReload != 0)
 			r->cannon[i].timeToReload--;

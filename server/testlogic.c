@@ -94,15 +94,59 @@ testDriveAndCycle ()
 		printf("After %d cycle(s) x=%g, y=%g BD %d\n", i+1, runner.x, runner.y, runner.break_distance);
 	}
 	drive(&runner, 40, 0);
-	 for(i = 0; i < 40; i++){
-	 cycle();
-	 printf("After %d cycle(s) x=%g, y=%g BD %d\n", i+1, runner.x, runner.y, runner.break_distance);
-	 }
+	for(i = 0; i < 40; i++){
+		cycle();
+		printf("After %d cycle(s) x=%g, y=%g BD %d\n", i+1, runner.x, runner.y, runner.break_distance);
+	}
 	
+}
+
+int
+testRobotsCollision ()
+{
+	struct robot rock = {
+		"I'm rock!",
+		true,
+		100, 12,
+		0, 0, 0, 0, 0, 0, 0,
+		{
+			{ 0, 0, 0 },
+			{ 0, 0, 0 }	
+		}
+	};
+	
+	struct robot stone = {
+		"I'm stone!",
+		true,
+		100, 100,
+		0, 0, 0, 0, 0, 0, 0,
+		{
+			{ 0, 0, 0 },
+			{ 0, 0, 0 }	
+		}
+	};
+	
+	struct robot *robogang[2];
+	robogang[0] = &stone;
+	robogang[1] = &rock;
+	
+	all_robots = robogang;
+	max_robots = 2;
+	
+	drive(&stone, 90, 100);
+	
+	int i;
+	for(i = 0; i < 100; i++){
+		cycle();
+		printf("x1=%g, y1=%g x2=%g, y2=%g \n", rock.x, rock.y, stone.x, stone.y);
+		
+	}
+	printf("Damage of robot 1 %d damage of robot 2 %d\n", rock.damage, stone.damage);
 }
 
 int
 main(){
 	testScanAndShoot();
 	testDriveAndCycle();
+	testRobotsCollision();
 }
