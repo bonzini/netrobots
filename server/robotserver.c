@@ -184,32 +184,17 @@ cycle_robot(struct robot *r)
 		r->target_speed = 0;
 	}
 	
-	if (r->x >= 1000){
+	if (r->x > 1000){
 		r->x = 1000;
-		r->speed = 0;
-		r->break_distance = 0;
-		r->target_speed = 0;
-	}
-	
-	if (r->x <= 0){
+	}	
+	if (r->x < 0){
 		r->x = 0;
-		r->speed = 0;
-		r->break_distance = 0;
-		r->target_speed = 0;
 	}
-	
-	if (r->y >= 1000){
+	if (r->y > 1000){
 		r->y = 1000;
-		r->speed = 0;
-		r->break_distance = 0;
-		r->target_speed = 0;
 	}
-
-	if (r->y <= 0){
+	if (r->y < 0){
 		r->y = 0;
-		r->speed = 0;
-		r->break_distance = 0;
-		r->target_speed = 0;
 	}
 	
 	int i;
@@ -238,7 +223,7 @@ cycle_robot(struct robot *r)
 		}
 	
 	r->x += cos(r->degree * M_PI/180) * r->speed * SPEED_RATIO;
-	r->y -= sin(r->degree * M_PI/180) * r->speed * SPEED_RATIO;
+	r->y += sin(r->degree * M_PI/180) * r->speed * SPEED_RATIO;
 	
 	//printf("Degree %d, Cos %g, Sin %g, Speed %d\n", r->degree , cos(r->degree  * M_PI/180), sin(r->degree  * M_PI/180), r->speed);
 	

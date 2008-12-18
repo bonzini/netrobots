@@ -27,6 +27,7 @@ double
 degtorad(int degrees)
 {
 	double radiants;
+	degrees = 90-degrees;
 	radiants = degrees * M_PI/180;
 	return radiants;
 }

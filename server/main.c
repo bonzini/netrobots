@@ -59,8 +59,8 @@ void go (int dest_x, int dest_y, cairo_t *cr)
 int
 main (int argc, char **argv)
 {
-  unsigned int i = 0, start_ticks;
-max_robots = 1;
+	unsigned int i = 0, start_ticks;
+	max_robots = 1;
 
 	struct robot *robogang[2];
 	robogang[0] = &r;
@@ -76,31 +76,31 @@ max_robots = 1;
   init_map ();
 
   start_ticks = SDL_GetTicks ();
-	
-	while (1)
-    {
-      int x = rand () / (double) RAND_MAX * 1000;
-      int y = rand () / (double) RAND_MAX * 1000;
-      go (x, y, cairo_context);	/* go somewhere in the field */
-    }
+
+    
 	
   /* enter event-loop */
   for (;;)
-    {
-      SDL_Event event;
-      i++;
-      draw_gl ();
-      event.type = -1;
-      SDL_PollEvent (&event);
+		{
+		int x = rand () / (double) RAND_MAX * 1000;
+		int y = rand () / (double) RAND_MAX * 1000;
+		go (x, y, cairo_context);	/* go somewhere in the field */
+      
+		SDL_Event event;
+		i++;
+		draw_gl ();
+		event.type = -1;
+		SDL_PollEvent (&event);
 
-      /* check for user hitting close-window widget */
-      if (event.type == SDL_QUIT)
-	break;
+		/* check for user hitting close-window widget */
+		if (event.type == SDL_QUIT)
+			break;
 
-      /* Call functions here to parse event and render on cairo_context...  */
-      do_anim (cairo_context, &event);
-      do_map (cairo_context, &event);
+		/* Call functions here to parse event and render on cairo_context...  */
+		do_anim (cairo_context, &event);
+		do_map (cairo_context, &event);
     }
+	
 
   printf ("%.2f fps\n", (i * 1000.0) / (SDL_GetTicks () - start_ticks));
 
