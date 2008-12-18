@@ -44,7 +44,7 @@ standardizeDegree(int degree)
 	return result % 360;
 }
 
-double
+int
 getDistance(int x1, int y1, int x2, int y2)
 {
 	int x, y;
@@ -59,14 +59,14 @@ compute_angle(int x1, int y1, int x2, int y2)
 	return standardizeDegree(-atan2(y2 - y1,x2 - x1) * 180/M_PI);
 }
 
-double
+int
 scan (struct robot *r, int degree, int resolution)
 {
-	double min_distance = 1500.0;
+	int min_distance = 1500;
 	int posx = r->x;
 	int posy = r->y;
 	int i,angle_between_robots,upper_angle,bottom_angle;
-	double distance;
+	int distance;
 	//printf("x %d\n", posx);
 	//printf("y %d\n", posy);
 
@@ -102,7 +102,7 @@ int
 cannon (struct robot *r, int degree, int range)
 {
 	int i,freeSlot;
-	double distance_from_center, x, y;
+	int distance_from_center, x, y;
 	/* If the cannon is not reloading, meaning it's ready the robottino shoots otherwise break */
 	for(freeSlot = 0; freeSlot < 2; freeSlot++)
 		if(r->cannon[freeSlot].timeToReload == 0) break;
@@ -119,21 +119,21 @@ cannon (struct robot *r, int degree, int range)
 	
 	r->cannon_degree = degree;
 	
-	printf("Degree %d, Cos %g, Sin %g\n", degree, cos(degree), sin(degree));
+	printf("Degree %d, Cos %g, Sin %g\n", degree, cos(degree * M_PI/180), sin(degree * M_PI/180));
 	
-	x = cos(degree) * range + r->x;
-	y = sin(degree) * range + r->y;
+	x = fabs(cos(degree * M_PI/180)) * range + r->x;
+	y = fabs(sin(degree * M_PI/180)) * range + r->y;
 	
-	printf("x%g, y%g\n", x,y);
+	printf("x%d, y%d\n", x,y);
 	
 	for(i = 0; i < max_robots; i++){
 		if(all_robots[i]->damage < 100){
 			distance_from_center = getDistance(all_robots[i]->x, all_robots[i]->y, x, y);
-			if(distance_from_center <= 5.0)
+			if(distance_from_center <= 5)
 				all_robots[i]->damage += 10;
-			else if(distance_from_center <= 20.0)
+			else if(distance_from_center <= 20)
 				all_robots[i]->damage += 5;
-			else if(distance_from_center <= 40.0)
+			else if(distance_from_center <= 40)
 				all_robots[i]->damage += 3;
 		}
 	}
@@ -166,9 +166,9 @@ cycle(){
 static void
 cycle_robot(struct robot *r)
 {
-	r->x += cos(degree * 180/M_PI) + masiar;
-	r->y += sin(degree * 180/M_PI) + masiar;
-	r->speed = masiar;
+	r->x += cos(degree * 180/M_PI) + (r->speed / 10) * 4;
+	r->y += sin(degree * 180/M_PI) + (r->speed / 10) * 4;
+	r->speed = (r->speed / 10) * 4;
 }
 */
 
@@ -216,8 +216,8 @@ main ()
 	all_robots = robogang;
 	max_robots = 3;
 	
-	double distance = scan(&walle, 315, 10);
-	printf("Closest robot is at %gm from Walle\n", distance);
+	int distance = scan(&walle, 315, 10);
+	printf("Closest robot is at %dm from Walle\n", distance);
 		
 	int result = cannon(&walle, 315, distance);
 	printf("Walle shots the closest robot! Its damage is now %d\n", masiar.damage);	
