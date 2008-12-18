@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #define RELOAD_RATIO 10
+#define SPEED_RATIO 10
 
 struct cannon {
 	int timeToReload;
@@ -17,6 +18,7 @@ struct robot {
   int x, y;
   int damage;
   int speed;
+  int break_distance;
   int target_speed;
   int degree;
   int cannon_degree;

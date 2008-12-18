@@ -136,6 +136,8 @@ cannon (struct robot *r, int degree, int range)
 			else if(distance_from_center <= 40)
 				all_robots[i]->damage += 3;
 		}
+		if(all_robots[i]->damage >= 100)
+			kill_robot(all_robots[i]);
 	}
 	
 	r->cannon[freeSlot].timeToReload = RELOAD_RATIO;
@@ -152,25 +154,34 @@ drive (struct robot *r, int degree, int speed)
 		degree = r->degree;
 	r->target_speed = speed;
 	r->degree = degree;
-}
-
-/*
-void
-cycle(){
-	int i;
-	for(i = 0; i < sizeof(*all_robots) / sizeof(struct robot); i++){
-		cycle_robot (&all_robots[i]);
-	}
+	r->break_distance = speed / 10 * 4;
 }
 
 static void
 cycle_robot(struct robot *r)
 {
-	r->x += cos(degree * 180/M_PI) + (r->speed / 10) * 4;
-	r->y += sin(degree * 180/M_PI) + (r->speed / 10) * 4;
-	r->speed = (r->speed / 10) * 4;
+	r->x += cos(r->degree * 180/M_PI) * r->speed * SPEED_RATIO;
+	r->y += sin(r->degree * 180/M_PI) * r->speed * SPEED_RATIO;
+	if(r->break_distance == 0)
+		r->speed = r->target_speed;
+	else
+		r->break_distance--;
+	/*Decreasing the time to reload the missiles*/
+	int i;
+	for(i = 0; i < 2; i++){
+		if(r->cannon[i].timeToReload != 0)
+			r->cannon[i].timeToReload--;
+	}
 }
-*/
+
+void
+cycle()
+{
+	int i;
+	for(i = 0; i < max_robots; i++)
+		if(all_robots[i]->damage < 100)
+			cycle_robot(all_robots[i]);
+}
 
 int
 main ()
@@ -179,10 +190,10 @@ main ()
 		"Wall-E",
 		true,
 		100, 100,
-		0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0,
 		{
 			{ 0, 0, 0 },
-			{ 0, 0, 0 }			
+			{ 0, 0, 0 }	
 		}
 	};
 	
@@ -190,7 +201,7 @@ main ()
 		"Eve",
 		true,
 		500, 500,
-		0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0,
 		{
 			{ 0, 0, 0 },
 			{ 0, 0, 0 }			
@@ -201,7 +212,7 @@ main ()
 		"Bubi",
 		true,
 		300, 300,
-		0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0,
 		{
 			{ 0, 0, 0 },
 			{ 0, 0, 0 }			
