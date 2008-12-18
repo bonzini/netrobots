@@ -184,7 +184,7 @@ cycle()
 }
 
 int
-main ()
+test ()
 {
 	struct robot walle = {
 		"Wall-E",
