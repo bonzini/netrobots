@@ -61,18 +61,20 @@ client_init(char * remotehost, char * port)
 int 
 get_resp_value() 
 {
+	/*
 	char resp[STD_RESP_LEN];
 	int count;
 	count = read(serverfd, resp, STD_RESP_LEN);
-	if(count > 0 && resp[0]) { /* check the status */
+	if(count > 0 && resp[0]) {
 		char ** argv; 
 		int result;
 		str_to_argv(resp, &argv);
 		result = atoi(argv[1]);
-		/*free_argv(&argv);*/
+		free_argv(&argv);
 		return result;
 	}
 	else return -1;
+*/
 }
 
 int
