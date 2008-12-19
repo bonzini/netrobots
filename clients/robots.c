@@ -145,6 +145,9 @@ main (int argc, char **argv)
 	signal(SIGPIPE, SIG_IGN);
 	if(client_init(remotehost, port))
 		printf_die(stderr, "could not connect to : %s:%s\n", EXIT_FAILURE, remotehost, port);
+
+	srandom(time(NULL) + getpid());
+	srand(time(NULL) + getpid());
 	rmain ();
 }
 
