@@ -69,6 +69,9 @@ shot_animation(cairo_t *cr, double size, double direction, struct cannon *can)
 	cairo_pattern_add_color_stop_rgba (pat, 0.3, 1, 0.5, 0, time/(RELOAD_RATIO/2.0));
 	cairo_pattern_add_color_stop_rgba (pat, 0.6, 1, 0.2, 0, time/(RELOAD_RATIO/2.0));
 	cairo_set_source (cr, pat);
+	
+		
+	cairo_set_source_rgba(cr, 0, 0, 0, 1);
 	cairo_fill (cr);
 	cairo_pattern_destroy (pat);
 	
@@ -134,6 +137,11 @@ draw_stats(cairo_t *cr, struct robot **all)
 
 	cairo_save (cr);
 	cairo_translate (cr, 600, 0);
+	
+	cairo_set_source_rgba(cr, 0.5, 0.5, 0.5, 0.2);
+	cairo_rectangle(cr, 0, 0, 120, 540);
+	cairo_fill(cr);
+		
 	for(i = 0; i < max_robots; i++){
 		
 		/* display the name of the robot*/
@@ -171,9 +179,7 @@ draw_stats(cairo_t *cr, struct robot **all)
 		cairo_set_source_rgb (cr, all[i]->color[0], all[i]->color[1], all[i]->color[2]);
 		cairo_line_to (cr, 100, 45+i*space);
 		cairo_stroke (cr);
-		cairo_set_source_rgba(cr, 0.5, 0.5, 0.5, 0.2);
-		cairo_rectangle(cr, 0, 0, 120, 540);
-		cairo_fill(cr);
+		
 	}
 	cairo_restore (cr);
 }
