@@ -19,6 +19,7 @@ main (int argc, char **argv)
 
   /* initialize SDL and create as OpenGL-texture source */
   cairo_t *cairo_context;
+  srandom(time(NULL) + getpid());
   server_init(argc, argv);
   init_cairo();
 

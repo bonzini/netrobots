@@ -167,7 +167,7 @@ draw_stats(cairo_t *cr, struct robot **all)
 		/*separation line between the different robots*/
 		cairo_move_to (cr, 20, 45+i*space);
 		cairo_set_line_width (cr, 4);
-		cairo_set_source_rgb (cr, 0, 0, 0);
+		cairo_set_source_rgb (cr, all[i]->color[0], all[i]->color[1], all[i]->color[2]);
 		cairo_line_to (cr, 100, 45+i*space);
 		cairo_stroke (cr);
 		
@@ -197,8 +197,7 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	cairo_save(cr);
 	cairo_rotate(cr, degtorad(90+myRobot->degree));
 	
-	int i;
-//	cairo_set_source_rgba (cr, myRobot->color, myRobot->color+1, myRobot->color+2, 0.6);
+	cairo_set_source_rgba (cr, myRobot->color[0], myRobot->color[1], myRobot->color[2], 0.6);
 	cairo_set_line_width (cr, 2);
 	cairo_move_to (cr,x1,y1);   
 	cairo_line_to (cr,x1,y2);

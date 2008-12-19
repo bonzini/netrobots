@@ -41,19 +41,18 @@ int
 create_client (int fd)
 {
 	struct pollfd pollfd;
+	struct robot *r;
 
 	if (fd == -1)
 		return 0;
-	struct robot *r;
-	//srandom(time(NULL));
 	if (!(r = (struct robot *) malloc (sizeof(struct robot))))
 		return 0;
 	memset (r, 0, sizeof (*r));
 	r->x = 1000 * (random() / (double) RAND_MAX);
 	r->y = 1000 * (random() / (double) RAND_MAX);
-	float arr[] = { get_rand_color(), get_rand_color(), get_rand_color() };
-	r->color = &arr[0];
-	printf("%g\n",r->color[0]);
+	r->color[0] = get_rand_color();
+	r->color[1] = get_rand_color();
+	r->color[2] = get_rand_color();
 	pollfd.fd = fd;
 
 	fds[current_robots] = pollfd;
