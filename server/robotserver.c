@@ -183,20 +183,17 @@ cycle_robot(struct robot *r)
 		r->break_distance = 0;
 		r->target_speed = 0;
 	}
-	
-	if (r->x > 1000){
-		r->x = 1000;
-	}	
-	if (r->x < 0){
-		r->x = 0;
+	if(r->damage < 100){
+		if (r->x > 1000)
+			r->x = 1000;
+		if (r->x < 0)
+			r->x = 0;
+		if (r->y > 1000)
+			r->y = 1000;
+		if (r->y < 0)
+			r->y = 0;
 	}
-	if (r->y > 1000){
-		r->y = 1000;
-	}
-	if (r->y < 0){
-		r->y = 0;
-	}
-	
+		
 	int i;
 	for(i = 0; i < max_robots; i++)
 		if((int)r->x == (int)all_robots[i]->x && (int)r->y == (int)all_robots[i]->y){
