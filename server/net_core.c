@@ -53,6 +53,7 @@ create_client (int fd)
 }
 
 static volatile int timer;
+static int winner;
 
 void raise_timer (int sig)
 {
@@ -81,17 +82,15 @@ process_robots ()
 			}
 		}
 
-		if (to_talk <= 1) {
-			if (to_talk == 0)
+		if (to_talk == 0) {
+			if (winner)
+				ndprintf(stdout, "[GAME] Winner found\n");
+			else
 				ndprintf(stdout, "[GAME] Ended - No winner\n");
-			else {
-				ndprintf(stdout, "[GAME] Ended - Winner found\n");
-				sockwrite(rfd, END, "Congratulations you are the winner!\n");
-				while ((ret = read(rfd, buf, STD_BUF)) && ret != -1);
-				close(rfd);
-			}
 			exit(EXIT_SUCCESS);
 		}
+		else if (to_talk == 1)
+			winner = 1;
 
 		poll(fds, max_robots, 10);
 		for (i = 0; i < max_robots; i++) {
@@ -99,6 +98,8 @@ process_robots ()
 			pfd = &fds[i];
 			if (pfd->fd == -1) // Dead robot
 				continue;
+			if (pfd->events == 0)
+				to_talk--;
 
 			if (pfd->revents & (POLLERR | POLLHUP)) { /* Error or disconnected robot -> kill */
 				close(pfd->fd);
@@ -144,12 +145,15 @@ process_robots ()
 					else {
 						if (result.cycle)
 							pfd->events = 0;
-						sockwrite(pfd->fd, OK, "%d", result.result);
+						if (winner && pfd->fd == rfd)
+							sockwrite(pfd->fd, END, "%d", result.result);
+						else
+							sockwrite(pfd->fd, OK, "%d", result.result);
 					}
 					break;
 			}
 		}
-	} while (!timer);
+	} while (to_talk && !timer);
 }
 
 void

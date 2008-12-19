@@ -48,6 +48,8 @@ get_resp_value(int ret)
 
 	count = read(serverfd, resp, STD_RESP_LEN);
 
+	printf("%s\n", resp);
+
 	if (count > 0) {
 		resp[count] = '\0';
 		argc = str_to_argv(resp, &argv);
