@@ -130,7 +130,7 @@ draw_stats(cairo_t *cr, struct robot **all)
 	cairo_pattern_t *pat;
 
 	cairo_save (cr);
-	
+	cairo_translate (cr, 600, 0);
 	for(i = 0; i < max_robots; i++){
 		
 		/* display the name of the robot*/
@@ -145,7 +145,7 @@ draw_stats(cairo_t *cr, struct robot **all)
 		cairo_move_to (cr, 10, 25+i*space);
 		cairo_set_line_width (cr, 30);
 		cairo_line_to (cr, 110, 25+i*space);
-		pat = cairo_pattern_create_linear (0.0, 0.0,  100.0, 100.0);
+		pat = cairo_pattern_create_linear (0.0, 0.0,  100.0, 0.0);
 		cairo_pattern_add_color_stop_rgba (pat, 1, 1, 0, 0, 1);
 		cairo_pattern_add_color_stop_rgba (pat, 0, 0, 1, 0, 1);
 		cairo_set_source (cr, pat);
