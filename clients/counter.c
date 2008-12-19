@@ -78,7 +78,6 @@ main ()
 	    }
 	  else
 	    {
-printf ("found at %d dist %d\n", angle, range);
 	      while (cannon (angle, range) == 0)	/* fire first shot */
 		cycle ();
 	      while (cannon (angle, range) == 0)	/* fire second shot */

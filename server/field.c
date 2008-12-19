@@ -171,7 +171,9 @@ draw_stats(cairo_t *cr, struct robot **all)
 		cairo_set_source_rgb (cr, all[i]->color[0], all[i]->color[1], all[i]->color[2]);
 		cairo_line_to (cr, 100, 45+i*space);
 		cairo_stroke (cr);
-		
+		cairo_set_source_rgba(cr, 0.5, 0.5, 0.5, 0.2);
+		cairo_rectangle(cr, 0, 0, 120, 540);
+		cairo_fill(cr);
 	}
 	cairo_restore (cr);
 }
