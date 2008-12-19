@@ -4,4 +4,4 @@ for i
 do
   (j=$i; echo $j: `./$j`) &
 done) &
-./main -n $#
+./server -n $#
