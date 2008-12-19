@@ -44,8 +44,7 @@ main (int argc, char **argv)
   printf ("%.2f fps\n", (i * 1000.0) / (SDL_GetTicks () - start_ticks));
 
   /* clear resources before exit */
-  destroy_cairo_context (cairo_context);
-  free_gl ();
+  destroy_cairo();
 
   return 0;
 }

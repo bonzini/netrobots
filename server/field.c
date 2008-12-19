@@ -268,5 +268,9 @@ init_cairo ()
 #endif
 }
 
-
-
+void
+destroy_cairo ()
+{
+	destroy_cairo_context(CR);
+	free_gl ();
+}
