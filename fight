@@ -4,4 +4,4 @@ for i
 do
   (j=$i; echo $j: `./$j`) &
 done) &
-./server -n $#
+./robotserver -n $#
