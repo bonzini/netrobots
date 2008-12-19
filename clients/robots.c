@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <netdb.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "net_utils.h"
 #include "net_command_list.h"
@@ -99,12 +100,48 @@ client_init(char * remotehost, char * port)
 	return result;
 }
 
+
+void
+usage (char *prog, int retval)
+{
+	printf("Usage %s [-n <clients> -H <hostname> -P <port> -d]\n"
+		   "\t-H <remothost>\tSpecifies hostname (Default: 127.0.0.1)\n"
+		   "\t-P <port>\tSpecifies port (Default: 4300)\n"
+		   "\t-d\tEnables debug mode\n", prog);
+	exit(retval);
+}
+
 int
 main (int argc, char **argv)
 {
+	int retval;
+	char * remotehost = DEFAULT_REMOTEHOST, * port = DEFAULT_PORT;
+	
+	while ((retval = getopt(argc, argv, "dn:hH:P:")) != -1) {
+		switch (retval) {
+			case 'H':
+				remotehost = optarg;
+				break;
+			case 'P':
+				port = optarg;
+				break;
+			case 'd':
+				debug = 1;
+				break;
+			case 'h':
+				usage(argv[0], EXIT_SUCCESS);
+				break;
+			default:
+				break;
+		}
+	}
+	
+	if (argc > optind) /* || !hostname || !port)*/
+		usage(argv[0], EXIT_FAILURE);
+	
 	signal(SIGPIPE, SIG_IGN);
-	if(client_init(DEFAULT_REMOTEHOST, DEFAULT_PORT))
-		printf_die(stderr, "could not connect to : %s:%s\n", EXIT_FAILURE, DEFAULT_REMOTEHOST, DEFAULT_PORT);
+	if(client_init(remotehost, port))
+		printf_die(stderr, "could not connect to : %s:%s\n", EXIT_FAILURE, remotehost, port);
 	rmain ();
 }
 
