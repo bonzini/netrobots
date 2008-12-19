@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-#include "field.h"
 #include "net_utils.h"
 #include "net_defines.h"
 #include "robotserver.h"
@@ -192,8 +191,7 @@ server_init (char *hostname, char *port)
 	ndprintf(stdout, "[GAME] Starting. All clients connected!\n");
 	for (i = 0; i < max_robots; i++)
 		sockwrite(fds[i].fd, START, "Let's play!");
-	/* CREATES THE CANVAS OF THE GAME */
-	init_cairo();
+
 	signal (SIGALRM, raise_timer);
 	while (1) {
 		struct itimerval itv;
@@ -206,7 +204,7 @@ server_init (char *hostname, char *port)
 		timer = 0;
 		cycle();
 
-		update_display();
+		//update_display();
 		process_robots();
 	}
 	freeaddrinfo(ai);
