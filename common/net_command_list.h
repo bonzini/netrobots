@@ -14,3 +14,4 @@
 #define START 2
 #define END 3
 #define DEAD 4
+#define DRAW 5

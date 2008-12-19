@@ -15,6 +15,7 @@
 #include "drawing.h"
 
 #define STD_CLIENTS 5
+#define STD_CYCLES 10000
 #define STD_HOSTNAME NULL
 #define STD_PORT "4300"
 
@@ -23,6 +24,9 @@ struct pollfd *fds;
 
 extern int debug;
 extern int max_robots;
+
+int max_cycles;
+int current_cycles = 0;
 
 struct robot **all_robots;
 
@@ -205,6 +209,18 @@ server_start (char *hostname, char *port)
 
 void server_cycle (SDL_Event *event)
 {
+	int i;
+	if (current_cycles >= max_cycles) {
+		for (i = 0; i < max_robots; i++) {
+			if (fds[i].fd != -1) {
+				sockwrite(fds[i].fd, DRAW, "Max cycles reached!\n");
+				close(fds[i].fd);
+			}
+		}
+		ndprintf(stdout, "[GAME] Ended - Draw!\n");
+		exit(EXIT_SUCCESS);
+	}
+	current_cycles++;
 	struct itimerval itv;
 	itv.it_interval.tv_sec = 0;
 	itv.it_interval.tv_usec = 0;
@@ -235,8 +251,11 @@ server_init (int argc, char *argv[])
 
 	char *port = STD_PORT, *hostname = STD_HOSTNAME;
 
-	while ((retval = getopt(argc, argv, "dn:hH:P:")) != -1) {
+	while ((retval = getopt(argc, argv, "dn:hH:P:c:")) != -1) {
 		switch (retval) {
+			case 'c':
+				max_cycles = atoi(optarg);
+				break;	
 			case 'H':
 				hostname = optarg;
 				break;
@@ -262,6 +281,9 @@ server_init (int argc, char *argv[])
 
 	if (max_robots <= 1)
 		max_robots = STD_CLIENTS;
+
+	if (max_cycles <= 1)
+		max_cycles = STD_CYCLES;
 
 	all_robots = (struct robot **) malloc(max_robots * sizeof(struct robot *));
 

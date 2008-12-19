@@ -29,6 +29,9 @@ eval_response(int resp) {
 			case START:
 			case OK:
 				break;
+			case DRAW:
+				printf_die(stdout, "Game ended wih a draw!\n", 0);
+				break;
 			case ERROR:
 			default:
 				printf_die(stderr, "Error detected.. exiting!\n", 2);

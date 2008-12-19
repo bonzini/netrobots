@@ -9,7 +9,6 @@
 #include <math.h>
 
 #include "drawing.h"
-#include "anim.h"
 #include "field.h"
 #include "net_defines.h"
 
