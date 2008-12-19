@@ -37,6 +37,8 @@ float get_rand_color() {
 	return color;
 }
 
+static int quad = 0;
+
 int
 create_client (int fd)
 {
@@ -48,8 +50,12 @@ create_client (int fd)
 	if (!(r = (struct robot *) malloc (sizeof(struct robot))))
 		return 0;
 	memset (r, 0, sizeof (*r));
-	r->x = 1000 * (random() / (double) RAND_MAX);
-	r->y = 1000 * (random() / (double) RAND_MAX);
+
+	/* place each robot in a different quadrant.  */
+	r->x = ((quad & 1) ? 0 : 500) + 500 * (random() / (double) RAND_MAX);
+	r->y = ((quad & 2) ? 0 : 500) + 500 * (random() / (double) RAND_MAX);
+	quad++;
+
 	r->color[0] = get_rand_color();
 	r->color[1] = get_rand_color();
 	r->color[2] = get_rand_color();
