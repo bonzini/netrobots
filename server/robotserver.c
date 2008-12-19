@@ -8,6 +8,8 @@ kill_robot(struct robot *r) {
 	r->x = -1000;
 	r->y = -1000;
 	r->damage = 100;
+	r->cannon[0].timeToReload = 0;
+	r->cannon[1].timeToReload = 0;
 }
 
 int 
