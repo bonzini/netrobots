@@ -28,7 +28,6 @@ double
 degtorad(int degrees)
 {
 	double radiants;
-	degrees = 90-degrees;
 	radiants = degrees * M_PI/180;
 	return radiants;
 }
@@ -195,7 +194,7 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	cairo_translate(cr, myRobot->x, 1000 - myRobot->y);
 	cairo_scale(cr, size, size);
 	cairo_save(cr);
-	cairo_rotate(cr, degtorad(myRobot->degree));
+	cairo_rotate(cr, degtorad(90-myRobot->degree));
 	
 	cairo_set_source_rgba (cr, 0.2, 0.4, 0.5, 0.6);
 	cairo_set_line_width (cr, 2);
