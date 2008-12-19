@@ -22,12 +22,12 @@ run ()
   switch (last_dir)
     {
     case SOUTH:
-      drive (270, 100);
+      drive (90, 100);
       while (y - 100 < loc_y () && i++ < 100)
 	cycle ();
       break;
     case NORTH:
-      drive (90, 100);
+      drive (270, 100);
       while (y + 100 > loc_y () && i++ < 100)
 	cycle ();
       break;
@@ -46,7 +46,7 @@ run ()
   drive (0, 0);
 }
 
-#define RES			1
+#define RES			3
 #define DAMAGE_THRESHOLD	1
 
 int
@@ -78,6 +78,7 @@ main ()
 	    }
 	  else
 	    {
+printf ("found at %d dist %d\n", angle, range);
 	      while (cannon (angle, range) == 0)	/* fire first shot */
 		cycle ();
 	      while (cannon (angle, range) == 0)	/* fire second shot */

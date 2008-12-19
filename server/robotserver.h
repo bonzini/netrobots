@@ -1,7 +1,7 @@
 #ifndef ROBOTSERVER_H
 #define ROBOTSERVER_H 1
 
-#define RELOAD_RATIO 300
+#define RELOAD_RATIO 50
 #define SPEED_RATIO 0.04
 #define BREAK_DISTANCE (0.7 / SPEED_RATIO)
 

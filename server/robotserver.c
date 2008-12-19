@@ -68,7 +68,7 @@ getDistance(int x1, int y1, int x2, int y2)
 int
 compute_angle(int x1, int y1, int x2, int y2)
 {
-	return standardizeDegree(-atan2(y2 - y1,x2 - x1) * 180/M_PI);
+	return standardizeDegree(atan2(y2 - y1,x2 - x1) * 180/M_PI);
 }
 
 int
