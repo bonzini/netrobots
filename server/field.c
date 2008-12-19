@@ -145,7 +145,7 @@ draw_stats(cairo_t *cr, struct robot **all)
 		cairo_move_to (cr, 10, 25+i*space);
 		cairo_set_line_width (cr, 30);
 		cairo_line_to (cr, 110, 25+i*space);
-		pat = cairo_pattern_create_linear (0.0, 0.0,  100.0, 0.0);
+		pat = cairo_pattern_create_linear (100.0, 0.0,  0.0, 0.0);
 		cairo_pattern_add_color_stop_rgba (pat, 1, 1, 0, 0, 1);
 		cairo_pattern_add_color_stop_rgba (pat, 0, 0, 1, 0, 1);
 		cairo_set_source (cr, pat);
@@ -190,10 +190,10 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	
 	cairo_save(cr);
 	
-	cairo_translate(cr, myRobot->x, 1000 - myRobot->y);
+	cairo_translate(cr, myRobot->x, myRobot->y);
 	cairo_scale(cr, size, size);
 	cairo_save(cr);
-	cairo_rotate(cr, degtorad(90-myRobot->degree));
+	cairo_rotate(cr, degtorad(90+myRobot->degree));
 	
 	cairo_set_source_rgba (cr, 0.2, 0.4, 0.5, 0.6);
 	cairo_set_line_width (cr, 2);
@@ -212,8 +212,8 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	
 	cairo_stroke (cr);
 	cairo_restore(cr);
-	draw_cannon(cr, degtorad(myRobot->cannon_degree));
-	draw_radar(cr, degtorad(myRobot->radar_degree));
+	draw_cannon(cr, degtorad(270+myRobot->cannon_degree));
+	draw_radar(cr, degtorad(270+myRobot->radar_degree));
 	shot_animation(cr, degtorad(myRobot->cannon_degree), myRobot->cannon[0]);
 	shot_animation(cr, degtorad(myRobot->cannon_degree), myRobot->cannon[1]);
 	cairo_restore(cr);
