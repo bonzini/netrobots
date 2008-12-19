@@ -217,8 +217,10 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	draw_cannon(cr, degtorad(270+myRobot->cannon_degree));
 	draw_radar(cr, degtorad(270+myRobot->radar_degree));
 	cairo_restore(cr); /* pop translate/scale */
+#if 0
 	shot_animation(cr, size, degtorad(myRobot->cannon_degree), myRobot->cannon[0]);
 	shot_animation(cr, size, degtorad(myRobot->cannon_degree), myRobot->cannon[1]);
+#endif
 }
 
 void
