@@ -32,7 +32,7 @@ degtorad(int degrees)
 }
 
 void
-shot_animation(cairo_t *cr, double direction, struct cannon can)
+shot_animation(cairo_t *cr, double size, double direction, struct cannon can)
 {
 	int time = can.timeToReload-RELOAD_RATIO/2;/*reduce the reload time by half of it so it draws the
 										explosion and the flash for half the reload time*/
@@ -41,6 +41,7 @@ shot_animation(cairo_t *cr, double direction, struct cannon can)
 	
 	cairo_save (cr);
 	cairo_pattern_t *pat;
+	cairo_scale(cr, size, size);
 
 #if 0
 	/*flash of the shot*/
@@ -191,9 +192,8 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 		px4=70, py4=10;
 	
 	cairo_save(cr);
-	cairo_scale(cr, size, size);
-	cairo_save(cr);
 	cairo_translate(cr, myRobot->x, myRobot->y);
+	cairo_scale(cr, size, size);
 	cairo_save(cr);
 	cairo_rotate(cr, degtorad(90+myRobot->degree));
 	
@@ -216,10 +216,9 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	cairo_restore(cr); /* pop rotate */
 	draw_cannon(cr, degtorad(270+myRobot->cannon_degree));
 	draw_radar(cr, degtorad(270+myRobot->radar_degree));
-	cairo_restore(cr); /* pop translate */
-	shot_animation(cr, degtorad(myRobot->cannon_degree), myRobot->cannon[0]);
-	shot_animation(cr, degtorad(myRobot->cannon_degree), myRobot->cannon[1]);
-	cairo_restore(cr); /* pop scale */
+	cairo_restore(cr); /* pop translate/scale */
+	shot_animation(cr, size, degtorad(myRobot->cannon_degree), myRobot->cannon[0]);
+	shot_animation(cr, size, degtorad(myRobot->cannon_degree), myRobot->cannon[1]);
 }
 
 void
