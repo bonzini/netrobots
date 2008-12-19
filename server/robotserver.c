@@ -134,7 +134,7 @@ cannon (struct robot *r, int degree, int range)
 	//printf("Degree %d, Cos %g, Sin %g\n", degree, cos(degree * M_PI/180), sin(degree * M_PI/180));
 	
 	x = cos(degree * M_PI/180) * range + r->x;
-	y = -sin(degree * M_PI/180) * range + r->y;
+	y = sin(degree * M_PI/180) * range + r->y;
 	
 	//printf("x%d, y%d\n", x,y);
 	
