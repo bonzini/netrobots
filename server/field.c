@@ -18,7 +18,7 @@
 #include "robotserver.h"
 
 static cairo_t *map_context;
-static cairo_t *CR;
+static cairo_t *cr;
 
 /*
  * transforms degrees in to radians
@@ -32,25 +32,26 @@ degtorad(int degrees)
 }
 
 void
-shot_animation(cairo_t *cr, double size, double direction, struct cannon can)
+shot_animation(cairo_t *cr, double size, double direction, struct cannon *can)
 {
-	int time = can.timeToReload-RELOAD_RATIO/2;/*reduce the reload time by half of it so it draws the
+	int time = can->timeToReload-RELOAD_RATIO/2;/*reduce the reload time by half of it so it draws the
 										explosion and the flash for half the reload time*/
 	
 	if(time <= 0)return;/*if the gun is loaded don't paint anything*/
 	
 	cairo_save (cr);
 	cairo_pattern_t *pat;
-	cairo_scale(cr, size, size);
+	cairo_translate (cr, can->x, can->y);
 
 #if 0
-	/*flash of the shot*/
+	/* flash of the shot, should be translate to the robot's position.  */
+	cairo_scale(cr, size, size);
 	cairo_rotate(cr, direction);
 	
 	pat = cairo_pattern_create_linear (128, 64,
                                      128, 128.0);
-	cairo_pattern_add_color_stop_rgba (pat, 0, 1, 0, 0, time/(RELOAD_RATIO/2));
-	cairo_pattern_add_color_stop_rgba (pat, 1, 1, 1, 0, time/(RELOAD_RATIO/2));
+	cairo_pattern_add_color_stop_rgba (pat, 0, 1, 0, 0, time/(RELOAD_RATIO/2.0));
+	cairo_pattern_add_color_stop_rgba (pat, 1, 1, 1, 0, time/(RELOAD_RATIO/2.0));
 	cairo_set_source (cr, pat);
 	
 	cairo_move_to (cr, 32, 50);
@@ -62,12 +63,11 @@ shot_animation(cairo_t *cr, double size, double direction, struct cannon can)
 #endif
 	
 	/* explosion*/
-	cairo_arc (cr, can.x, can.y, 40, 0, 2*M_PI);
-	pat = cairo_pattern_create_radial (can.x, can.y,
-                                     10, can.x, can.y, 40);
-	cairo_pattern_add_color_stop_rgba (pat, 0, 1, 0, 0, time/(RELOAD_RATIO/2));
-	cairo_pattern_add_color_stop_rgba (pat, 0.3, 1, 0.5, 0, time/(RELOAD_RATIO/2));
-	cairo_pattern_add_color_stop_rgba (pat, 0.6, 1, 0.2, 0, time/(RELOAD_RATIO/2));
+	cairo_arc (cr, 0, 0, 40, 0, 2*M_PI);
+	pat = cairo_pattern_create_radial (0, 0, 10, 0, 0, 40);
+	cairo_pattern_add_color_stop_rgba (pat, 0, 1, 0, 0, time/(RELOAD_RATIO/2.0));
+	cairo_pattern_add_color_stop_rgba (pat, 0.3, 1, 0.5, 0, time/(RELOAD_RATIO/2.0));
+	cairo_pattern_add_color_stop_rgba (pat, 0.6, 1, 0.2, 0, time/(RELOAD_RATIO/2.0));
 	cairo_set_source (cr, pat);
 	cairo_fill (cr);
 	cairo_pattern_destroy (pat);
@@ -219,10 +219,8 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	draw_cannon(cr, degtorad(270+myRobot->cannon_degree));
 	draw_radar(cr, degtorad(270+myRobot->radar_degree));
 	cairo_restore(cr); /* pop translate/scale */
-#if 0
-	shot_animation(cr, size, degtorad(myRobot->cannon_degree), myRobot->cannon[0]);
-	shot_animation(cr, size, degtorad(myRobot->cannon_degree), myRobot->cannon[1]);
-#endif
+	shot_animation(cr, size, degtorad(myRobot->cannon_degree), &myRobot->cannon[0]);
+	shot_animation(cr, size, degtorad(myRobot->cannon_degree), &myRobot->cannon[1]);
 }
 
 void
@@ -235,7 +233,7 @@ draw (cairo_t *cr)
 	cairo_paint(cr);
 	cairo_scale(cr, WIN_HEIGHT/1000.0, WIN_HEIGHT/1000.0);
 	for(i = 0; i < max_robots; i++){
-		draw_robot(cr, all_robots[i], 0.5);
+		draw_robot(cr, all_robots[i], 0.4);
 	}
 	cairo_restore(cr);	
 	draw_stats(cr, all_robots);
@@ -249,8 +247,8 @@ draw (cairo_t *cr)
 void
 update_display(SDL_Event *event)
 {	
-	draw(CR);
-	if (event->type == SDL_KEYDOWN)
+  draw(cr);
+  if (event->type == SDL_KEYDOWN)
     {
       if (event->key.keysym.sym == SDLK_q)
         {
@@ -264,7 +262,7 @@ update_display(SDL_Event *event)
 void
 init_cairo ()
 {
-	CR = init_gl();
+	cr = init_gl();
 #if 0
   cairo_surface_t *png_map = cairo_image_surface_create_from_png ("background.png");
   map_context = create_cairo_context ();
@@ -277,6 +275,6 @@ init_cairo ()
 void
 destroy_cairo ()
 {
-	destroy_cairo_context(CR);
+	destroy_cairo_context(cr);
 	free_gl ();
 }
