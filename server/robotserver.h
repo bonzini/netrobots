@@ -22,6 +22,7 @@ struct robot {
   int cannon_degree;
   int radar_degree;
   struct cannon cannon[2];
+  float * color; 	
 
   /* info on what was done... */
 };

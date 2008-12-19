@@ -30,6 +30,13 @@ int current_cycles = 0;
 
 struct robot **all_robots;
 
+float get_rand_color() {
+	float color = (float) (random() /(double) RAND_MAX) ;
+	if(color < 0.1) color = 0.1;
+	if(color > 0.9) color = 0.9;
+	return color;
+}
+
 int
 create_client (int fd)
 {
@@ -38,13 +45,15 @@ create_client (int fd)
 	if (fd == -1)
 		return 0;
 	struct robot *r;
+	//srandom(time(NULL));
 	if (!(r = (struct robot *) malloc (sizeof(struct robot))))
 		return 0;
-
 	memset (r, 0, sizeof (*r));
-	r->x = 1000 * (rand() / (double) RAND_MAX);
-	r->y = 1000 * (rand() / (double) RAND_MAX);
-
+	r->x = 1000 * (random() / (double) RAND_MAX);
+	r->y = 1000 * (random() / (double) RAND_MAX);
+	float arr[] = { get_rand_color(), get_rand_color(), get_rand_color() };
+	r->color = &arr[0];
+	printf("%g\n",r->color[0]);
 	pollfd.fd = fd;
 
 	fds[current_robots] = pollfd;

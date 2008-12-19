@@ -195,7 +195,8 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	cairo_save(cr);
 	cairo_rotate(cr, degtorad(90+myRobot->degree));
 	
-	cairo_set_source_rgba (cr, 0.2, 0.4, 0.5, 0.6);
+	int i;
+//	cairo_set_source_rgba (cr, myRobot->color, myRobot->color+1, myRobot->color+2, 0.6);
 	cairo_set_line_width (cr, 2);
 	cairo_move_to (cr,x1,y1);   
 	cairo_line_to (cr,x1,y2);
