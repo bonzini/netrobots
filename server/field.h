@@ -11,9 +11,9 @@
 #include <SDL.h>
 
 /* Initialize the rendering of the map.  */
-extern void init_map (void);
+extern void init_cairo ();
 
-/* Render the map on every iteration.  */
-extern void do_map (cairo_t *, SDL_Event *);
+/* Update the canvas */
+extern void update_display(SDL_Event *);
 
 #endif /* MAP_H */

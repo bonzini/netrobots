@@ -19,6 +19,7 @@
 #include "robotserver.h"
 
 static cairo_t *map_context;
+static cairo_t *CR;
 
 /*
  * transforms degrees in to radians
@@ -220,20 +221,8 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	cairo_restore(cr);
 }
 
-
-/* can be used to add a background to the window*/
 void
-init_map (void)
-{
-  cairo_surface_t *png_map = cairo_image_surface_create_from_png ("background.png");
-  map_context = create_cairo_context ();
-  cairo_set_source_surface (map_context, png_map, 0, 0);
-  cairo_paint (map_context);
-  cairo_surface_destroy (png_map);
-}
-
-void
-do_map (cairo_t *cr, SDL_Event *event)
+draw (cairo_t *cr)
 {
 	int i;
 	cairo_save (cr);
@@ -245,10 +234,41 @@ do_map (cairo_t *cr, SDL_Event *event)
 		draw_robot(cr, all_robots[i], 0.5);
 	}
 	cairo_restore(cr);	
+	draw_stats(cr, all_robots);
 /* cairo_save (cairo_context);
   cairo_set_operator (cairo_context, CAIRO_OPERATOR_SOURCE);
   cairo_set_source_surface (cairo_context, cairo_get_target (map_context), 0, 0);
   cairo_paint (cairo_context);
   cairo_restore (cairo_context);*/
 }
+
+void
+update_display(SDL_Event *event)
+{	
+	draw(CR);
+	if (event->type == SDL_KEYDOWN)
+    {
+      if (event->key.keysym.sym == SDLK_q)
+        {
+          event->type = SDL_QUIT;
+          SDL_PushEvent (event);
+        }
+    }
+}
+
+/* can be used to add a background to the window*/
+void
+init_cairo ()
+{
+	CR = init_gl();
+#if 0
+  cairo_surface_t *png_map = cairo_image_surface_create_from_png ("background.png");
+  map_context = create_cairo_context ();
+  cairo_set_source_surface (map_context, png_map, 0, 0);
+  cairo_paint (map_context);
+  cairo_surface_destroy (png_map);
+#endif
+}
+
+
 
