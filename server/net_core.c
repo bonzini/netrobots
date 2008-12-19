@@ -41,7 +41,7 @@ create_client (int fd)
 	if (!(r = (struct robot *) malloc (sizeof(struct robot))))
 		return 0;
 
-	memset (r, 0, sizeof (r));
+	memset (r, 0, sizeof (*r));
 	r->x = 1000 * (rand() / (double) RAND_MAX);
 	r->y = 1000 * (rand() / (double) RAND_MAX);
 
