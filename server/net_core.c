@@ -7,16 +7,24 @@
 #include <sys/poll.h>
 #include <stdio.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 #include "net_utils.h"
 #include "net_defines.h"
 #include "robotserver.h"
+#include "drawing.h"
+
+#define STD_CLIENTS 5
+#define STD_HOSTNAME NULL
+#define STD_PORT "4300"
 
 int current_robots = 0;
 struct pollfd *fds;
 
+extern int debug;
 extern int max_robots;
-extern struct robot **all_robots;
+
+struct robot **all_robots;
 
 int
 create_client (int fd)
@@ -141,7 +149,7 @@ process_robots ()
 }
 
 void
-server_init (char *hostname, char *port)
+server_start (char *hostname, char *port)
 {
 	int sockd, ret, fd, i, opt = 1;
 	struct addrinfo *ai, *runp, hints;
@@ -193,20 +201,70 @@ server_init (char *hostname, char *port)
 		sockwrite(fds[i].fd, START, "Let's play!");
 
 	signal (SIGALRM, raise_timer);
-	while (1) {
-		struct itimerval itv;
-		itv.it_interval.tv_sec = 0;
-		itv.it_interval.tv_usec = 0;
-		itv.it_value.tv_sec = 0;
-		itv.it_value.tv_usec = 10000;
+}
 
-		setitimer (ITIMER_REAL, &itv, NULL);
-		timer = 0;
-		cycle();
+void server_cycle (SDL_Event *event)
+{
+	struct itimerval itv;
+	itv.it_interval.tv_sec = 0;
+	itv.it_interval.tv_usec = 0;
+	itv.it_value.tv_sec = 0;
+	itv.it_value.tv_usec = 10000;
+	setitimer (ITIMER_REAL, &itv, NULL);
+	timer = 0;
+	cycle();
+	update_display(event);
+	process_robots();
+}
 
-		//update_display();
-		process_robots();
+void
+usage (char *prog, int retval)
+{
+	printf("Usage %s [-n <clients> -H <hostname> -P <port> -d]\n"
+		"\t-n <clients>\tNumber of clients to start the game (has to be bigger than 1) (Default: 5)\n"
+		"\t-H <hostname>\tSpecifies hostname (Default: 127.0.0.1)\n"
+		"\t-P <port>\tSpecifies port (Default: 4300)\n"
+		"\t-d\tEnables debug mode\n", prog);
+	exit(retval);
+}
+
+int 
+server_init (int argc, char *argv[])
+{
+	int retval;
+
+	char *port = STD_PORT, *hostname = STD_HOSTNAME;
+
+	while ((retval = getopt(argc, argv, "dn:hH:P:")) != -1) {
+		switch (retval) {
+			case 'H':
+				hostname = optarg;
+				break;
+			case 'P':
+				port = optarg;
+				break;
+			case 'd':
+				debug = 1;
+				break;
+			case 'n':
+				max_robots = atoi(optarg);
+				break;
+			case 'h':
+				usage(argv[0], EXIT_SUCCESS);
+				break;
+			default:
+				break;
+		}
 	}
-	freeaddrinfo(ai);
-	exit(EXIT_FAILURE);
+
+	if (argc > optind) /* || !hostname || !port)*/
+		usage(argv[0], EXIT_FAILURE);
+
+	if (max_robots <= 1)
+		max_robots = STD_CLIENTS;
+
+	all_robots = (struct robot **) malloc(max_robots * sizeof(struct robot *));
+
+	server_start(hostname, port);
+	return 0;
 }

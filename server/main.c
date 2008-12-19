@@ -11,6 +11,7 @@
 #include "drawing.h"
 #include "anim.h"
 #include "field.h"
+#include "net_defines.h"
 
 int
 main (int argc, char **argv)
@@ -18,10 +19,9 @@ main (int argc, char **argv)
   unsigned int i = 0, start_ticks;
 
   /* initialize SDL and create as OpenGL-texture source */
-  cairo_t *cairo_context = init_gl ();
-
-  init_anim ();
-  init_map ();
+  cairo_t *cairo_context;
+  server_init(argc, argv);
+  init_cairo();
 
   start_ticks = SDL_GetTicks ();
 	
@@ -38,8 +38,7 @@ main (int argc, char **argv)
 		break;
 
 	/* Call functions here to parse event and render on cairo_context...  */
-	do_anim (cairo_context, &event);
-	do_map (cairo_context, &event);
+	server_cycle(&event);
     }
 	
 
