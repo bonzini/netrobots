@@ -26,7 +26,7 @@ common/net_utils.o: common/net_utils.c common/net_utils.h
 
 ## robots
 
-ROBOTS = counter rabbit rook sniper
+ROBOTS = counter rabbit rook sniper spot
 LIBROBOTS_OBJS = clients/robots.o common/net_utils.o
 
 all-robots: $(ROBOTS)
@@ -45,4 +45,7 @@ rook: clients/rook.c clients/robots.h robots.a
 	$(CC) -o $@ $< robots.a
 
 sniper: clients/sniper.c clients/robots.h robots.a
+	$(CC) -o $@ $< robots.a
+
+spot: clients/spot.c clients/robots.h robots.a
 	$(CC) -o $@ $< robots.a
