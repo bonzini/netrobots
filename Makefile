@@ -1,4 +1,4 @@
-all: all-logic all-graphics all-networking all-robots
+wall: all-logic all-graphics all-networking all-robots
 
 ## ------------------------------------
 ## ognuno scrive solo nella sua sezione
@@ -25,16 +25,18 @@ server/main.o: server/main.c server/drawing.h server/anim.h server/field.h
 
 ## networking
 
-NET_SRC = server/net_main.o common/net_utils.o server/net_commands.o server/net_core.o server/robotserver.o
+NET_SRC = server/net_main.o common/net_utils.o server/net_commands.o server/net_core.o server/robotserver.o server/field.o server/drawing.o server/anim.o
 
 all-networking:	 $(NET_SRC)
-	$(CC) -o server/netserver $(NET_SRC)
+	$(CC) $(LDFLAGS) -o server/netserver $(NET_SRC)
 server/robotserver.o: server/robotserver.h
 server/net_main.o: server/net_main.c common/net_utils.h server/robotserver.h
-server/net_core.o: server/net_core.c server/robotserver.h common/net_utils.h server/net_defines.h
+server/net_core.o: server/net_core.c server/robotserver.h common/net_utils.h server/net_defines.h server/field.h
 server/net_commands.o: server/net_commands.c server/net_defines.h server/robotserver.h
 common/net_utils.o: common/net_utils.c common/net_utils.h
-
+server/field.o: server/field.c server/drawing.h server/field.h server/anim.h
+server/drawing.o: server/drawing.c server/drawing.h
+server/anim.o: server/anim.c server/drawing.h
 clean-networking:
 	rm -rf server/net_*.o server/netserver
 

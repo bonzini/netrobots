@@ -19,6 +19,7 @@
 #include "robotserver.h"
 
 static cairo_t *map_context;
+static cairo_t * CR;
 
 /*
  * transforms degrees in to radians
@@ -220,6 +221,21 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	cairo_restore(cr);
 }
 
+void
+update_display() {
+	int i;
+	for(i = 0; i < max_robots; i++) {
+		draw_robot(CR, all_robots[i], 0.5);	
+	}
+	draw_stats(CR, all_robots);
+}
+
+int 
+init_cairo() {
+	CR = init_gl();
+	init_anim();
+	init_map();
+}
 
 /* can be used to add a background to the window*/
 void

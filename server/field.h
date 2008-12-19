@@ -16,4 +16,9 @@ extern void init_map (void);
 /* Render the map on every iteration.  */
 extern void do_map (cairo_t *, SDL_Event *);
 
+/* updates the display each iteration */
+extern void update_dislpay();
+
+/* initialize the canvas */
+extern int init_cairo();
 #endif /* MAP_H */
