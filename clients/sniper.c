@@ -117,7 +117,10 @@ main ()
 	    }
 
 	  if (hit)
-	    dir = MAX (dir - 10, sc - 45);	/* back up scan after attack */
+	    {
+	      dir = MAX (dir - 10, sc - 45);	/* back up scan after attack */
+	      hit = 0;
+	    }
 	}
       while (d == damage ());
     }
