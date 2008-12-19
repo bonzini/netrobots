@@ -15,7 +15,6 @@
 
 #include "drawing.h"
 #include "field.h"
-#include "anim.h"
 #include "robotserver.h"
 
 static cairo_t *map_context;
