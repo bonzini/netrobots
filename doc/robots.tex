@@ -35,6 +35,7 @@
 \end{verbatim}
 
 
+
 \subsection{Robot offense}
 
         The main offensive weapons are the cannon and scanner.  The
@@ -112,13 +113,12 @@
         \item Move robots
         \end{enumerate}
 
-        Note that the robots will not necessarily interact with the server
-        on every cycle.  Therefore, it is okay to modify the above protocol
-        so that communication between server and client only happens
-        when there is a need for it.
+        Note that the above protocol is actually not exactly
+        how the server and client interact.  The actual protocol is equivalent
+	though.
 
-        After a number of cycles given on the command line to the server
-        the server sends a command that will cause the robots to exit.
+        After a number of cycles given on the command line to the server,
+        the server declares a draw and causes the clients to exit.
 
 \section{Robots Function Library}
 
@@ -156,7 +156,7 @@ if ((range=scan(degree,2)) > 0) /* see if a target is there */
   cannon(degree,range);         /* if so, fire a missile */
 \end{verbatim}
 
-\item[\texttt{void drive (int degree,int speed)}]
+\item[\texttt{int drive (int degree,int speed)}]
         activates the engine, on a 
         specified heading and target speed.  Degree is forced into the range
         0-359 as in scan().  Speed is expressed as a percent, with 100 as
@@ -223,28 +223,5 @@ while (loc_x() > 20)
 drive (180,0);   /* stop drive */
 \end{verbatim}
 \end{description}
-
-\section{Organization of the work}
-
-       Your task for this week is to write down \texttt{robots.h} and
-       to decide the interfaces between the three modules of the server
-       program\footnote{The networking group will write the client
-         interface too}: networking, game logic and graphics.  This is
-       basically a set of ``struct''s containing info about robots and
-       missiles.
-       
-\section{Network}
-
-      \begin{enumerate}
-        
-        \item Update display - TODO ( Eberli e Dominguez )
-        \item Wait 10 ms (minus the time that was used to update the display) 
-        \item Receive commands from the robots - If no command received robot is_busy =  true, 
-        \item Send command replies to the robots - send FLAG ( 1 if ok 0 if not  ) + COMMAND REPLY,
-    	        Send current location to the robots - only if is the start cycle or they're not busy
-        \item Move robots - update all robot structures \\
-           	Move and explode missiles - not the start cycle
-        \end{enumerate}
-
 
 \end{document}
