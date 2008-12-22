@@ -1,0 +1,99 @@
+Netrobots
+---------
+
+This was started as a group project for a C programming course at
+University of Lugano (http://www.inf.unisi.ch).  This code was written
+by seven 3rd semester students (with aid from the TA) in a week, working
+on average 2-3 hours every day.
+
+The game is mostly based on CROBOTS (see
+http://en.wikipedia.org/wiki/Crobots for more info), with the following
+main differences: 1) the game logic was designed from scratch based on
+the CROBOTS manual; bugs and exact timings of CROBOTS are not emulated.
+2) the robots run concurrently rather than in time sharing; this means
+that doing math is basically free in the robots.  3) the shooting and
+scanning angles are measured clockwise to allow using the C library's
+sin/cos/atan functions.  4) divisions by zero will *crash* the robot
+(kill it) rather than restart it.
+
+Here is the structure:
+
+   fight    -  Driver to start a robot fight!
+
+   Makefile -  Makefile to build the sample robots and the server
+
+   doc/     -  LaTeX documentation, based on CROBOTS by Tom Poindexter.
+
+   server/  -  Source code for the server, released under the GPL.
+               Currently works only on MacOS.
+
+   clients/ -  Source code for five sample robots (four rewrites of the
+               samples provided with CROBOTS, and a rewrite of ESPOTRUN.R)
+               and for the client, in the public domain.
+
+
+The code is released hoping that other people can help improving it.
+
+Usage
+=====
+
+For how to program a robot, see doc/robots.tex.
+
+To compile the program (right now it only works on MacOS X, see below!) do
+
+   make
+
+To start a fight, use the enclosed fight script as follows:
+
+   ./fight ./counter ./rook ./sniper ./spot
+
+This will start the four enclosed "fighter" robots (the fifth, "rabbit",
+does not shoot at all and can be used to start training your own robots).
+
+Tasks
+=====
+
+Possible tasks include:
+
+- easy: Linux port (just stop using OpenGL and instead use SDL directly)
+
+- easy: document the client/server protocol
+
+- easy: rewrite the client library in Java/Perl/Python/Ruby (includes additional
+  portability benefits!)
+
+- easy: Windows port of the server (SDL provides a replacement for setitimer)
+
+- easy: modify clients/robots.h to provide a compatibility layer allowing to run
+  old CROBOTS code.
+
+- easy: write a non-graphic (and more portable) version of the server
+
+- medium: Windows port of the C client library
+
+- medium: integrate the "fight" script into the server.
+
+
+Known bugs
+==========
+
+None. :-)
+
+
+Credits
+=======
+
+The authors of the initial release are:
+
+    game logic     Davide Arrigo
+                   Masiar Babazadeh
+                   Roberto Minelli
+
+    graphics       Sascha Dominguez
+                   Matthias Eberli
+
+    networking     Remo Lemma
+                   Patrick Zulian
+
+    coordination   Paolo Bonzini <bonzini@gnu.org>
+
