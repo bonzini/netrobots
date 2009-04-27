@@ -19,8 +19,8 @@ extern cairo_t *create_cairo_context (void);
 extern void destroy_cairo_context (cairo_t *);
 
 /* Functions used by main.c as a high-level interface with SDL.  */
-extern cairo_t *init_gl (void);
-extern void free_gl (void);
-extern void draw_gl (void);
+extern cairo_t *init_sdl (void);
+extern void free_sdl (void);
+extern void draw_sdl (void);
 
 #endif /* DRAWING_H */
