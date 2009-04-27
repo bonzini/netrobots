@@ -55,8 +55,6 @@ Tasks
 
 Possible tasks include:
 
-- easy: Linux port (just stop using OpenGL and instead use SDL directly)
-
 - easy: document the client/server protocol
 
 - easy: rewrite the client library in Java/Perl/Python/Ruby (includes additional
@@ -67,7 +65,7 @@ Possible tasks include:
 - easy: modify clients/robots.h to provide a compatibility layer allowing to run
   old CROBOTS code.
 
-- easy: write a non-graphic (and more portable) version of the server
+- easy: write a non-graphic version of the server
 
 - medium: Windows port of the C client library
 

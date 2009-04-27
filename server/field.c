@@ -70,8 +70,6 @@ shot_animation(cairo_t *cr, double size, double direction, struct cannon *can)
 	cairo_pattern_add_color_stop_rgba (pat, 0.6, 1, 0.2, 0, time/(RELOAD_RATIO/2.0));
 	cairo_set_source (cr, pat);
 	
-		
-	cairo_set_source_rgba(cr, 0, 0, 0, 1);
 	cairo_fill (cr);
 	cairo_pattern_destroy (pat);
 	
@@ -268,7 +266,7 @@ update_display(SDL_Event *event)
 void
 init_cairo ()
 {
-	cr = init_gl();
+	cr = init_sdl();
 #if 0
   cairo_surface_t *png_map = cairo_image_surface_create_from_png ("background.png");
   map_context = create_cairo_context ();
@@ -282,5 +280,5 @@ void
 destroy_cairo ()
 {
 	destroy_cairo_context(cr);
-	free_gl ();
+	free_sdl ();
 }

@@ -29,7 +29,7 @@ main (int argc, char **argv)
   for (;;) {
 	SDL_Event event;
 	i++;
-	draw_gl ();
+	draw_sdl ();
 	event.type = -1;
 	SDL_PollEvent (&event);
 
