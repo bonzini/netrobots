@@ -12,7 +12,7 @@
 
 #define WIN_WIDTH	720
 #define WIN_HEIGHT	540
-#define WIN_TITLE	"Battlefield 1"
+#define WIN_TITLE	"Netrobots Battlefield"
 
 /* Functions to create more cairo contexts.  */
 extern cairo_t *create_cairo_context (void);
