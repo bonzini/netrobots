@@ -24,8 +24,8 @@ Here is the structure:
 
    doc/     -  LaTeX documentation, based on CROBOTS by Tom Poindexter.
 
-   server/  -  Source code for the server, released under the GPL.
-               Currently works only on MacOS.
+   server/  -  Source code for the server, released under the GPL (should
+               work on MacOS and Linux).
 
    clients/ -  Source code for five sample robots (four rewrites of the
                samples provided with CROBOTS, and a rewrite of ESPOTRUN.R)
