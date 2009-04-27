@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "net_utils.h"
 #include "net_defines.h"

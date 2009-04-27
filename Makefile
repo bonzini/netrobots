@@ -11,7 +11,7 @@ server/robotserver.o: server/robotserver.c server/robotserver.h
 
 ## graphics
 CFLAGS = -g `pkg-config cairo --cflags` `pkg-config sdl --cflags` -Icommon
-LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs` -framework OpenGL
+LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs`
 MAIN_SRC = server/main.o server/drawing.o server/field.o common/net_utils.o server/net_commands.o server/net_core.o server/robotserver.o
 
 all-server: robotserver
@@ -35,16 +35,16 @@ robots.a: $(LIBROBOTS_OBJS)
 	ar cru $@ $(LIBROBOTS_OBJS)
 
 counter: clients/counter.c clients/robots.h robots.a
-	$(CC) -o $@ $< robots.a
+	$(CC) -o $@ $< -lm robots.a
 
 rabbit: clients/rabbit.c clients/robots.h robots.a
-	$(CC) -o $@ $< robots.a
+	$(CC) -o $@ $< -lm robots.a
 
 rook: clients/rook.c clients/robots.h robots.a
-	$(CC) -o $@ $< robots.a
+	$(CC) -o $@ $< -lm robots.a
 
 sniper: clients/sniper.c clients/robots.h robots.a
-	$(CC) -o $@ $< robots.a
+	$(CC) -o $@ $< -lm robots.a
 
 spot: clients/spot.c clients/robots.h robots.a
-	$(CC) -o $@ $< robots.a
+	$(CC) -o $@ $< -lm robots.a

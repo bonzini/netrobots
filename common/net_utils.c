@@ -135,7 +135,7 @@ str_isnumber (char *str)
 	for (i = 0; i < len; i++) {
 		if (i == 0 && str[i] == '-')
 			continue;
-		if (!isnumber(str[i]))
+		if (!isdigit(str[i]))
 			return 0;
 	}
 	return 1;

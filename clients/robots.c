@@ -8,6 +8,7 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "net_utils.h"
 #include "net_command_list.h"
