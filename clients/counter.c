@@ -9,9 +9,9 @@
 void
 run ()
 {
-  enum { EAST, NORTH, WEST, SOUTH } last_dir;
+  static enum { EAST, NORTH, WEST, SOUTH } last_dir;
   int x, y;
-  int i;
+  int i = 0;
   x = loc_x ();
   y = loc_y ();
   if (last_dir == EAST || last_dir == WEST)
