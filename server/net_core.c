@@ -43,7 +43,6 @@ static int quad = 0;
 int
 create_client (int fd)
 {
-	struct pollfd pollfd;
 	struct robot *r;
 
 	if (fd == -1)
@@ -60,9 +59,8 @@ create_client (int fd)
 	r->color[0] = get_rand_color();
 	r->color[1] = get_rand_color();
 	r->color[2] = get_rand_color();
-	pollfd.fd = fd;
 
-	fds[current_robots] = pollfd;
+	fds[current_robots].fd = fd;
 	all_robots[current_robots++] = r;
 	return 1;
 }
@@ -90,6 +88,7 @@ process_robots ()
 
 	do {
 		to_talk = 0;
+		rfd = -1;
 		for (i = 0; i < max_robots; i++) {
 			if (fds[i].fd != -1) {
 				to_talk++;
@@ -192,13 +191,12 @@ server_start (char *hostname, char *port)
 		ndprintf_die(stderr, "[ERROR] getaddrinf(): couldn't fill the struct!\n");
 
 	runp = ai;
-
-	while (runp) {
+	do {
 		sockd = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
 		if (sockd != -1)
 			break;
 		runp = runp->ai_next;
-	}
+	} while (runp);
 	if (sockd == -1)
 		ndprintf_die(stderr, "[ERROR] socket(): Couldn't create socket!\n");
 
