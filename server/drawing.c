@@ -71,7 +71,6 @@ init_sdl (void)
   /* init cairo.  */
   unsigned char *buffer = calloc (4 * WIN_WIDTH * WIN_HEIGHT, sizeof (char));
   cairo_t *cairo_context = create_cairo_context_1 (buffer);
-  cairo_surface_t *surface = cairo_get_target (cairo_context);
 
   /* init SDL */
   if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) == -1))

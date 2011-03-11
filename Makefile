@@ -7,7 +7,7 @@ clean:
 
 COMMON_CFLAGS = -g -Wuninitialized -O2
 CFLAGS = $(COMMON_CFLAGS) `pkg-config cairo --cflags` `pkg-config sdl --cflags` -Icommon
-LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs`
+LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs` -lm
 MAIN_OBJ = server/main.o server/drawing.o server/field.o common/net_utils.o server/net_commands.o server/net_core.o server/robotserver.o
 
 robotserver: $(MAIN_OBJ)

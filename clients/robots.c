@@ -85,7 +85,6 @@ client_init(char * remotehost, char * port)
 	if(!ai)
 		printf_die(stderr, "[ERROR] getaddrinf(): couldn't fill the struct!\n", EXIT_FAILURE);
 	struct addrinfo *runp = ai;
-	runp = ai;
 	while (runp) {
 		sock = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
 		if (sock != -1) {
